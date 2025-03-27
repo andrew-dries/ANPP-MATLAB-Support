@@ -1,0 +1,66 @@
+function cdf_fig = Plot_CDF(input_vectors, plot_info)
+%This function is meant to take in an input vector, and plot a CDF
+%
+%INPUTS: input_vectors (N,M), plot_info_input
+%N = Length of Vector
+%M = Number of Vectors
+%plot_info_input.title
+%plot_info_input.x_label
+%plot_info_input.y_label
+%plot_info_input.legend
+plot_info_input.vector[1].
+
+%*************************************************************************%
+%Initializations
+%*************************************************************************%
+
+%Create CDF figure
+cdf_fig = figure;
+
+%Create CDF figure properties
+hold on;
+grid on;
+
+%**************************************%
+%Check size of input vectors
+size_input = size(input_vectors);
+
+%Check for width of vectors
+vector_width = size(input_vectors,2);
+%**************************************%
+
+%**************************************%
+%Check for plot_info
+if(nargin >= 2)
+    plot_info = plot_info_input;
+else
+    plot_info.title         = cell(1,vector_width);
+    plot_info.x_label       = cell(1,vector_width);
+    plot_info.y_label       = cell(1,vector_width);
+    plot_info.legend        = cell(1,vector_width);
+end
+
+%Marker Types
+markers = {'x', '+', 'o', }
+
+%**************************************%
+
+%*************************************************************************%
+%Begin Plotting
+%*************************************************************************%
+
+%Populate figure properties
+title(plot_info.title)
+xlabel(plot_info.x_label)
+ylabel(plot_info.y_label)
+
+%Step through the number of vector CDFs to plot
+for i = 1:vector_width
+
+    %Plot CDF
+    plot(1:size_input(1), sort(input_vectors), ...
+            LineStyle="none", Marker="x");
+
+end
+
+end

@@ -1,0 +1,28 @@
+function velocity_heading = calculate_velocity_heading(velocity)
+%CALCULATE_VELOCITY_HEADING Summary of this function goes here
+%   Detailed explanation goes here
+
+    %*********************************************************************%
+    %Initializations
+    %*********************************************************************%
+
+    %Initialize heading
+    velocity_heading    = zeros(length(velocity),1);
+
+    %Define north vector
+    north_vector        = [1,0];
+
+    %*********************************************************************%
+    %Calculate velocity heading
+    %*********************************************************************%
+    
+    %Tan(Ang)   = Opposite / Adjacent
+    %Opposite   = easting
+    %Adjacent   = northing
+
+    velocity_heading = atand(velocity(:,2) ./ velocity(:,1));
+
+    %Filter for negative values
+
+end
+

@@ -1,0 +1,158 @@
+function [distance, time] = distance_between_lat_lon_vectors(positions1, times1, positions2, times2)
+%DISTANCE_BETWEEN_LAT_LON_POINTS Summary of this function goes here
+%   Detailed explanation goes here
+
+    %*********************************************************************%
+    %Initialization
+    %*********************************************************************%
+
+    %Initialize distance & time
+    distance    = zeros(length(positions1),1);
+    time        = zeros(length(positions1),1);
+
+    %*********************************************************************%
+    %Mask for time & Calculate Distance
+    %*********************************************************************%
+    
+    %Determine length of longest time vector
+    max_length  = max(length(times1), length(times2));
+
+    %Determine length of shortest time vector
+    min_length  = min(length(times1), length(times2));
+
+    %find min & max common times for both vectors
+    min_vec_1   = min(times1);
+    max_vec_1   = max(times1);
+    min_vec_2   = min(times2);
+    max_vec_2   = max(times2);
+    
+    %Determine lowest average frequency vector
+    freq_1      = median(diff(times1));
+    freq_2      = median(diff(times2));
+
+    %Find min and max common times
+    common_min  = max(min_vec_1, min_vec_2);
+    common_max  = min(max_vec_1, max_vec_2);
+
+    %Make sure times overlap
+    if(common_min > max_vec_1 || common_min > max_vec_2)
+        error("Times do not overlap!");
+    elseif(common_max < min_vec_1 || common_max < min_vec_2)
+        error("Times do not overlap!");
+    end
+
+    %Initializations of loop
+    %Determine lowest frequency time to step through
+    if(freq_1 >= freq_2)
+        step_time = times1;
+    else
+        step_time = times2;
+    end
+
+    %Determine step index
+    step_index      = find_closest_time(step_time, common_min);
+
+    %Initialize start time
+    time_now        = step_time(step_index);
+
+    %Initialize index
+    index           = 1;
+
+    %Walk through times
+    while(time_now <= common_max )
+
+        %Find common times
+        index1              = find_closest_time(times1, time_now);
+        index2              = find_closest_time(times2, time_now);
+
+        %Calculate distance at these positions
+        distance_loop       = distance_between_lat_lon_points(positions1(index1,:), positions2(index2,:));
+
+        %Record distance vector
+        distance(index)     = distance_loop;
+
+        %Record time vector
+        time(index)         = time_now;
+
+        %Increment indecies
+        index               = index + 1;
+        step_index          = step_index + 1;
+
+        %Increment time now
+        time_now            = step_time(step_index);
+
+    end
+
+    %Trim extra entiries into time and distance
+    distance(index:end)     = [];
+    time(index:end)         = [];
+
+end
+
+function distance = distance_between_lat_lon_points(positions1, positions2)
+%This function calcualtes the distance between two points
+
+    %*********************************************************************%
+    %Initialization
+    %*********************************************************************%
+
+    %Defines constants
+    R           = 6371*10^3;
+    deg_2_rad   = pi/180;
+
+    %Initialize distance
+    distance = 0;
+
+    %Convert degrees to radians
+    positions1 = positions1*deg_2_rad;
+    positions2 = positions2*deg_2_rad;
+
+    %*********************************************************************%
+    %Calculate Distance
+    %*********************************************************************%
+    
+    %Make starting calcs
+    delta_lat   = positions2(1) - positions1(1);
+    delta_lon   = positions2(2) - positions1(2);
+
+    %Calculate a
+    a           = sin(delta_lat/2)^2 + cos(positions1(1))*cos(positions2(1))*sin(delta_lon/2)^2;
+
+    %Calcualte c
+    c           = 2*atan2(sqrt(a), sqrt(1-a));
+
+    %Calcualte distance
+    distance    = R*c;
+
+end
+
+function index = find_closest_time(time_vector, time_desired)
+%This function returns the time index of a timte vector closest to the
+%desired time.  This function operates by subtracting the time desired from
+%the time vector, taking the absolute value, and finding the index of the
+%minimum value.
+
+    %*********************************************************************%
+    %Initialization
+    %*********************************************************************%
+
+    %Initialize index
+    index               = 0;
+
+    %Determine if time desired is outside min and max of vector
+    if(min(time_vector) > time_desired || max(time_vector) < time_desired)
+        index           = 0;
+        return;
+    end
+
+    %*********************************************************************%
+    %Find min time
+    %*********************************************************************%
+
+    %Remove the time desired from the time vector
+    time_vector_minus   = abs(time_vector - time_desired);
+
+    %Find min index
+    index               = find(time_vector_minus == min(time_vector_minus), 1);
+
+end

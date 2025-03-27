@@ -1,0 +1,46 @@
+function distance = distance_between_lat_lon_points(positions1, times1, positions2, times2)
+%DISTANCE_BETWEEN_LAT_LON_POINTS Summary of this function goes here
+%   Detailed explanation goes here
+
+    %*********************************************************************%
+    %Initialization
+    %*********************************************************************%
+
+    %Defines earths readius
+    R           = 6371*10^3;
+    deg_2_rad   = pi/180;
+
+    %Initialize distance
+    distance    = zeros(length(positions1),1);
+
+    %Convert degrees to radians
+    positions1  = positions1*deg_2_rad;
+    positions2  = positions2*deg_2_rad;
+
+
+
+    %*********************************************************************%
+    %Mask for time
+    %*********************************************************************%
+    
+    %Determine length of longest time vector
+    max_length  = max(length(times1), length(times2));
+
+    %Determine length of shortest time vector
+    min_length  = min(length(times1), length(times2));
+
+    %find min & max common times for both vectors
+    min_vec_1   = min(times1);
+    max_vec_1   = max(times1);
+    min_vec_2   = min(times2);
+    max_vec_2   = max(times2);
+
+    %Find min and max common times
+    common_min  = max(min_vec_1, min_vec_2);
+    common_max  = min(max_vec_1, max_vec_2);
+
+    %Make sure times overlap
+    if(common_min > max_vec_1 || )
+
+end
+
