@@ -168,7 +168,7 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
             %Adjust distnace multiplier as needed
             %0.0001     = 10m
             %0.001      = 100m
-            dist_mult = 0.025*(max(abs(max_lat - min_lat), abs(max_lon - min_lon)));
+            dist_mult = 0.1*(max(abs(max_lat - min_lat), abs(max_lon - min_lon)));
 
             %Make heading at current position
             h(legend_cnt) = geoplot([input_positions.(fields.positions{j})(current_ind,1), ...
@@ -203,7 +203,7 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
 
         %Create legend if more than one value
         if(~isempty(plot_info.legend{1}))
-            legend([h(2), h(3), h(5), h(6)], 'Interpreter', 'none')
+            legend([h(2), h(4), h(5), h(6)], 'Interpreter', 'none')
         end
 
         %Set default position

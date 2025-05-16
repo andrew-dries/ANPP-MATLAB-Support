@@ -7,10 +7,20 @@ function velocity_heading = calculate_velocity_heading(velocity)
     %*********************************************************************%
 
     %Initialize heading
-    velocity_heading    = zeros(length(velocity),1);
+    velocity_heading            = zeros(length(velocity),1);
 
     %Define north vector
-    north_vector        = [1,0];
+    north_vector                = [1,0];
+
+    %*********************************************************************%
+    %Determine heading quadrants
+    %*********************************************************************%
+    
+    %Quadrant mask
+    quad_mask(:,1)              = velocity(:,2) >= 0 & velocity(:,1) >= 0;
+    quad_mask(:,2)              = velocity(:,2) >= 0 & velocity(:,1) <= 0;
+    quad_mask(:,3)              = velocity(:,2) <= 0 & velocity(:,1) <= 0;
+    quad_mask(:,4)              = velocity(:,2) <= 0 & velocity(:,1) >= 0;
 
     %*********************************************************************%
     %Calculate velocity heading
@@ -19,10 +29,17 @@ function velocity_heading = calculate_velocity_heading(velocity)
     %Tan(Ang)   = Opposite / Adjacent
     %Opposite   = easting
     %Adjacent   = northing
+    %Calculate velocity heaidng
+    angle                       = atand(velocity(:,2) ./ velocity(:,1));
 
-    velocity_heading = atand(velocity(:,2) ./ velocity(:,1));
+    %Apply quadrants adjustments
+    velocity_heading(quad_mask(:,1)) = angle(quad_mask(:,1)); %Quadrant 1 is no adjustment
+    velocity_heading(quad_mask(:,2)) = angle(quad_mask(:,2)); %Quadrant 2 is no adjustment
 
-    %Filter for negative values
+
+    %Filter for negative values and convert to 0 -> 360
+    mask                        = velocity_heading < 0;
+    velocity_heading(mask)      = 360 + velocity_heading(mask);
 
 end
 

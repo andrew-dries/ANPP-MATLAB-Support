@@ -8,6 +8,20 @@ function figs = Plot_ADU_Data(adu_data, wind_data, state_data, raw_gnss, time_ty
     %Initializations
     %*********************************************************************%
 
+    %Determine if wind data exists
+    if(~isempty(wind_data))
+        wind_exists = 1;
+    else
+        wind_exists = 0;
+    end
+
+    %Determine if raw gnss data exists
+    if(~isempty(raw_gnss))
+        gnss_exists = 1;
+    else
+        gnss_exists = 0;
+    end
+
     %Determine time type
     if(nargin >= 2)
 
@@ -17,28 +31,63 @@ function figs = Plot_ADU_Data(adu_data, wind_data, state_data, raw_gnss, time_ty
         
         if(time_type == 1) %date time
             plotting_time_adu       = adu_data.datetime;
-            plotting_time_wind      = wind_data.datetime;
             plotting_time_state     = state_data.datetime;
-            plotting_time_gnss      = raw_gnss.datetime;
+
+            %Check for wind data
+            if(wind_exists)
+                plotting_time_wind      = wind_data.datetime;
+            end
+
+            %Check for GNSS data
+            if(gnss_exists)
+                plotting_time_gnss      = raw_gnss.datetime;
+            end
+
         elseif(time_type == 2) %duration
             plotting_time_adu       = adu_data.duration_seconds;
-            plotting_time_wind      = wind_data.duration_seconds;
             plotting_time_state     = state_data.duration_seconds;
-            plotting_time_gnss      = raw_gnss.duration_seconds;
+
+            %Check for wind data
+            if(wind_exists)
+                plotting_time_wind      = wind_data.duration_seconds;
+            end
+
+            %Check for GNSS data
+            if(gnss_exists)
+                plotting_time_gnss      = raw_gnss.duration_seconds;
+            end
+
         elseif(time_type == 3) %Unix Time
             plotting_time_adu       = adu_data.unix_time_seconds;
-            plotting_time_wind      = wind_data.unix_time_seconds;
             plotting_time_state     = state_data.unix_time_seconds;
-            plotting_time_gnss      = raw_gnss.unix_time_seconds;
+
+            %Check for wind data
+            if(wind_exists)
+                plotting_time_wind      = wind_data.unix_time_seconds;
+            end
+
+            %Check for GNSS data
+            if(gnss_exists)
+                plotting_time_gnss      = raw_gnss.unix_time_seconds;
+            end
+
         end
 
     else
 
         %Default to duration seconds
         plotting_time_adu       = adu_data.duration_seconds;
-        plotting_time_wind      = wind_data.duration_seconds;
         plotting_time_state     = state_data.duration_seconds;
-        plotting_time_gnss      = raw_gnss.duration_seconds;
+
+        %Check for wind data
+        if(wind_exists)
+            plotting_time_wind      = wind_data.duration_seconds;
+        end
+
+        %Check for GNSS data
+        if(gnss_exists)
+            plotting_time_gnss      = raw_gnss.duration_seconds;
+        end
 
     end
 
@@ -62,14 +111,21 @@ function figs = Plot_ADU_Data(adu_data, wind_data, state_data, raw_gnss, time_ty
                                        "State Velocity"};
 
     %Gather times
+    times                           = [];
     times.adu                       = plotting_time_adu;
     times.state                     = plotting_time_state;
-    times.gnss                      = plotting_time_gnss;
+
+    if(gnss_exists)
+        times.gnss                  = plotting_time_gnss;
+    end
 
     %Gather input vectors
+    input_vectors                   = [];
     input_vectors.adu               = adu_data.airspeed;
     input_vectors.state             = sqrt(state_data.velocity(:,1).^2 + state_data.velocity(:,2).^2 + state_data.velocity(:,3).^2);
-    input_vectors.gnss              = sqrt(raw_gnss.velocity(:,1).^2 + raw_gnss.velocity(:,2).^2 + raw_gnss.velocity(:,3).^2);
+    if(gnss_exists)
+        input_vectors.gnss          = sqrt(raw_gnss.velocity(:,1).^2 + raw_gnss.velocity(:,2).^2 + raw_gnss.velocity(:,3).^2);
+    end
     
     %Call plot time history mask function
     hist_fig1 = Plot_Time_History(times, input_vectors, plot_info_input);
@@ -78,27 +134,29 @@ function figs = Plot_ADU_Data(adu_data, wind_data, state_data, raw_gnss, time_ty
     subplot(2,2,2);
 
     %Windspeed
-    plot_info_input.create_figure   = 0;
-    plot_info_input.lims_x          = [];
-    plot_info_input.lims_y          = [];
-    plot_info_input.title           = "Windspeed";
-    plot_info_input.x_label         = "Time (s)";
-    plot_info_input.y_label         = "Windspeed (m/s)";
-    plot_info_input.legend          = {"Wind North", ...
-                                       "Wind East"};
-
-    %Gather times
-    times                           = [];
-    times.wind_north                = plotting_time_wind;
-    times.wind_east                 = plotting_time_wind;
-
-    %Gather input vectors
-    input_vectors                   = [];
-    input_vectors.wind_north        = wind_data.velocity(:,1);
-    input_vectors.wind_east         = wind_data.velocity(:,2);
+    if(wind_exists)
+        plot_info_input.create_figure   = 0;
+        plot_info_input.lims_x          = [];
+        plot_info_input.lims_y          = [];
+        plot_info_input.title           = "Windspeed";
+        plot_info_input.x_label         = "Time (s)";
+        plot_info_input.y_label         = "Windspeed (m/s)";
+        plot_info_input.legend          = {"Wind North", ...
+                                           "Wind East"};
     
-    %Call plot time history mask function
-    hist_fig2 = Plot_Time_History(times, input_vectors, plot_info_input);
+        %Gather times
+        times                           = [];
+        times.wind_north                = plotting_time_wind;
+        times.wind_east                 = plotting_time_wind;
+    
+        %Gather input vectors
+        input_vectors                   = [];
+        input_vectors.wind_north        = wind_data.velocity(:,1);
+        input_vectors.wind_east         = wind_data.velocity(:,2);
+        
+        %Call plot time history mask function
+        hist_fig2 = Plot_Time_History(times, input_vectors, plot_info_input);
+    end
 
     %Air Speed Valid
     if(isfield(adu_data.system_status, 'airspeed_valid'))
