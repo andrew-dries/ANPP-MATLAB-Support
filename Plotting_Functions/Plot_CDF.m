@@ -13,8 +13,12 @@ function cdf_fig = Plot_CDF(input_vectors, plot_info_input)
     %Initializations
     %*************************************************************************%
     
-    %Create CDF figure
-    cdf_fig = figure;
+    %Create Time History Plot figure
+    if(plot_info_input.create_figure)
+        cdf_fig = figure('Name','Plot CDF');
+    else
+        cdf_fig = [];
+    end
     
     %Create CDF figure properties
     hold on;
@@ -37,6 +41,7 @@ function cdf_fig = Plot_CDF(input_vectors, plot_info_input)
         plot_info.x_label       = "Vector Values";
         plot_info.y_label       = "Percentage of Values";
         plot_info.legend        = cell(1,vector_width);
+        plot_info.range         = [min(input_vectors), max(input_vectors)];
     end
     
     %Marker Types
@@ -64,7 +69,12 @@ function cdf_fig = Plot_CDF(input_vectors, plot_info_input)
     
     end
 
-    %Create legend if more than one value
-    legend(plot_info.legend, 'Interpreter', 'none')
+    if(~isempty(plot_info.legend))
+        %Create legend if more than one value
+        legend(plot_info.legend, 'Interpreter', 'none')
+    end
+    
+    %Set Min / Max
+    xlim(plot_info.range);
 
 end

@@ -1,4 +1,4 @@
-%Load in log data & plot time jitter info
+Load in log data & plot time jitter info
 close all; clear; clc;
 
 %*************************************************************************%
@@ -6,12 +6,15 @@ close all; clear; clc;
 %*************************************************************************%
 
 %Add paths
-addpath('C:\Users\andrewdries\Documents\MATLAB\Support\Search_Path_Functions')
+addpath('C:\Users\andrewdries\Documents\MATLAB\Support\ANPP-MATLAB-Support\Search_Path_Functions')
 Add_Common_Paths_Function();
 
 %Time interval
-time_interval = [29790,30704];
-%time_interval = [];
+time_interval   = [7312,8722]; %
+time_interval   = [];
+
+%Set type time
+time_type       = 2;
 
 %*************************************************************************%
 %Load Data
@@ -24,6 +27,27 @@ log_data = load_processed_log_files(pwd, time_interval);
 if( isempty(log_data) )
     error(strcat("Current path contains no log data!  Path: ", pwd))
 end
+
+%Look for what structs exist
+log_fields = fields(log_data);
+
+%Look for raw_gnss
+if( ~isempty( find( contains(log_fields,'raw_gnss') == 1 ) ) )
+    raw_gnss_exist = 1;
+else
+    raw_gnss_exist = 0;
+end
+
+%Look for raw_gnss
+if( ~isempty( find( contains(log_fields,'wind') == 1 ) ) )
+    wind_exist = 1;
+else
+    wind_exist = 0;
+end
+
+%*************************************************************************%
+%Plot Data
+%*************************************************************************%
 
 %*************************************************************************%
 %Mask for errors
