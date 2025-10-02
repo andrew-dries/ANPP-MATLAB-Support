@@ -21,6 +21,12 @@ classdef plotting_inputs
 
         %For plotting raw sensors vibration rms
         plot_raw_sensors_vibration_rms      = 0;
+
+        %For plotting bias
+        plot_bias                           = 0;
+
+        %For plotting gyrocompassing heading versus position
+        plot_gyrocompass_heading_vs_pos     = 0;
         
     end
 
