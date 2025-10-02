@@ -5,9 +5,12 @@ close all; clear; clc;
 %Add Paths
 %*************************************************************************%
 
+%Path to your ANPP MATLAB Support Directory
+ANPP_MATLAB_Support_Path    = 'C:\Users\andrewdries\Documents\MATLAB\Support\ANPP-MATLAB-Support';
+
 %Add paths
-addpath('C:\Users\andrewdries\Documents\MATLAB\Support\ANPP-MATLAB-Support\Search_Path_Functions')
-Add_Common_Paths_Function();
+addpath(strcat(ANPP_MATLAB_Support_Path,'\Search_Path_Functions'));
+Add_Common_Paths_Function(ANPP_MATLAB_Support_Path);
 
 %*************************************************************************%
 %Set Plotting Options
