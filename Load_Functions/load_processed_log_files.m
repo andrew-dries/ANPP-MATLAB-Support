@@ -99,7 +99,7 @@ function data = load_processed_log_files(folderpath, time_filter)
 
     %Load Satellites
     if(exist(strcat(folderpath,'/Satellites.csv'), 'file') == 2)
-        data.satellites = import_satellites_log(strcat(folderpath,'/Satellites.csv'), time_filter);
+        data.satellites = load_satellites_log(strcat(folderpath,'/Satellites.csv'), time_filter);
     end
 
     %Load RawGNSS
