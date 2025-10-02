@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function body_acceleration = load_body_acceleration_log(filename, time_interval)
+function body_acceleration = load_body_acceleration_log(filename, time_filter)
 %This function reads in body acceleration data
 
     %*********************************************************************%
@@ -43,8 +43,7 @@ function body_acceleration = load_body_acceleration_log(filename, time_interval)
     %*********************************************************************%
 
     %Process time
-    [body_acceleration, time_mask] = process_time_log_file(body_acceleration, data(:,1:2), time_interval);
-
+    [body_acceleration, time_mask] = process_time_log_file(body_acceleration, data(:,1:2), time_filter);
     %Grab acceleration data
     body_acceleration.acceleration = data(time_mask,3:5);
 

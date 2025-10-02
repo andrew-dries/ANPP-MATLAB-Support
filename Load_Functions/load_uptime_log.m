@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function uptime_data = load_uptime_log(filename, time_interval)
+function uptime_data = load_uptime_log(filename, time_filter)
 %This function reads in up time data
 
     %*********************************************************************%
@@ -45,8 +45,7 @@ function uptime_data = load_uptime_log(filename, time_interval)
     %*********************************************************************%
     
     %Process time
-    [uptime_data, time_mask] = process_time_log_file(uptime_data, data(:,1:2), time_interval);
-
+    [uptime_data, time_mask] = process_time_log_file(uptime_data, data(:,1:2), time_filter);
     %Load raw data
     uptime_data.uptime = data(time_mask,3);
 

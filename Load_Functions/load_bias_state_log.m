@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function biases_data = load_bias_state_log(filename, time_interval)
+function biases_data = load_bias_state_log(filename, time_filter)
 %This function reads in bias state data
 
     %*********************************************************************%
@@ -45,8 +45,8 @@ function biases_data = load_bias_state_log(filename, time_interval)
     %*********************************************************************%
     
     %Process time
-    [biases_data, time_mask] = process_time_log_file(biases_data, data(:,1:2), time_interval);
-
+    [biases_data, time_mask] = process_time_log_file(biases_data, data(:,1:2), time_filter);
+    
     %Load raw data
     biases_data.accelerometer_bias = data(time_mask,3:5);
     biases_data.accelerometer_bias_standard_deviation = data(time_mask,6:8);

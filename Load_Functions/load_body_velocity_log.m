@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function body_velocity = load_body_velocity_log(filename, time_interval)
+function body_velocity = load_body_velocity_log(filename, time_filter)
 %This function reads in raw sensor data
 
     %*********************************************************************%
@@ -43,8 +43,7 @@ function body_velocity = load_body_velocity_log(filename, time_interval)
     %*********************************************************************%
 
     %Process time
-    [body_velocity, time_mask] = process_time_log_file(body_velocity, data(:,1:2), time_interval);
-
+    [body_velocity, time_mask] = process_time_log_file(body_velocity, data(:,1:2), time_filter);
     %Grab velocity data
     body_velocity.velocity = data(time_mask,3:5);
     

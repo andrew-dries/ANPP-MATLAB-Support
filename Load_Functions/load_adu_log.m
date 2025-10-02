@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function adu_data = load_adu_log(filename, time_interval)
+function adu_data = load_adu_log(filename, time_filter)
 %This function reads in adu log data
 
     %*********************************************************************%
@@ -45,8 +45,7 @@ function adu_data = load_adu_log(filename, time_interval)
     %*********************************************************************%
     
     %Process time
-    [adu_data, time_mask] = process_time_log_file(adu_data, data(:,1:2), time_interval);
-
+    [adu_data, time_mask] = process_time_log_file(adu_data, data(:,1:2), time_filter);
     %Load raw data
     adu_data.altitude_delay = data(time_mask,3);
     adu_data.airspeed_delay = data(time_mask,4);

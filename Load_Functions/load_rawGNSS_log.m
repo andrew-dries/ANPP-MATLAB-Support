@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function rawGNSS_data = load_rawGNSS_log(filename, time_interval)
+function rawGNSS_data = load_rawGNSS_log(filename, time_filter)
 %This function reads in raw sensor data
 
     %*********************************************************************%
@@ -43,8 +43,7 @@ function rawGNSS_data = load_rawGNSS_log(filename, time_interval)
     %*********************************************************************%
     
     %Process time
-    [rawGNSS_data, time_mask] = process_time_log_file(rawGNSS_data, data(:,1:2), time_interval);
-
+    [rawGNSS_data, time_mask] = process_time_log_file(rawGNSS_data, data(:,1:2), time_filter);
     %Load data
     rawGNSS_data.position = data(time_mask,3:5);
     rawGNSS_data.velocity = data(time_mask,6:8);
@@ -83,5 +82,12 @@ function rawGNSS_data = load_rawGNSS_log(filename, time_interval)
     if (length(data(1,:)) >= 28)
         rawGNSS_data.status.gnss2_failure = data(time_mask,28);
     end
+
+    %*********************************************************************%
+    %Calculate the unix time at first fix
+    %*********************************************************************%
+
+    %
+    rawGNSS_data.time_at_first_fix = rawGNSS_data.unix_time_seconds(find(rawGNSS_data.status.time_valid == 1,1));
 
 end

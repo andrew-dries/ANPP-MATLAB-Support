@@ -1,0 +1,166 @@
+function [index1, index2] = find_closest_time_vector_fast(time1, time2)
+%This function will take two time indecies of different lengths and return
+%two index vectors that correlate the indecies with the closest times to
+%each other
+
+    %*********************************************************************%
+    %Initialization
+    %*********************************************************************%
+
+    %Initialize index
+    
+
+    %Determine min & max for each vector
+    min_time_1      = min(time1);
+    max_time_1      = max(time1);
+    min_time_2      = min(time2);
+    max_time_2      = max(time2);
+
+    %Determine time overlaps
+    start_time      = max(min_time_1, min_time_2);
+    end_time        = min(max_time_1, max_time_2);
+
+    %Determine who has the smaller step size
+    step_size_time_1    = median(diff(unique(time1)));
+    step_size_time_2    = median(diff(unique(time2)));
+
+    %Determine if time1 or time 2 is the smaller time step
+    if(step_size_time_1 <= step_size_time_2)
+
+        %Step size time 1 is smaller, therefore a larger vector
+        step_size           = 1;
+        small_time          = time2;
+        big_time            = time1;
+        big_time_min        = min_time_1;
+        big_time_max        = max_time_1;
+        small_time_min      = min_time_2;
+        small_time_max      = max_time_2;
+        big_time_max_ind    = length(time1);
+        small_index         = zeros(size(time2));
+        big_index           = zeros(size(time1));
+
+    else
+        
+        %Step size time 2 is smaller, therefore a larger vector
+        step_size           = 2;
+        small_time          = time1;
+        big_time            = time2;
+        big_time_min        = min_time_2;
+        big_time_max        = max_time_2;
+        small_time_min      = min_time_1;
+        small_time_max      = max_time_1;
+        big_time_max_ind    = length(time2);
+        small_index         = zeros(size(time1));
+        big_index           = zeros(size(time2));
+
+    end
+
+    %Initialize last index to 0
+    last_index      = 1;
+
+    %*********************************************************************%
+    %Pass through the smaller vector length, and determine the closest time
+    %at each iteration
+    %*********************************************************************%
+
+    %Determine the starting index
+    if(small_time_min >= big_time_min)
+        start_ind   = 1;
+    else
+        start_ind   = find(small_time >= big_time_min, 1);
+    end
+
+    %Determine the stopping index
+    if(small_time_max <= big_time_max)
+        stop_ind    = length(small_time);
+    else
+        stop_ind    = min(find(small_time >= big_time_max, 1), big_time_max_ind);
+    end
+
+    %Step through
+    for i = start_ind:stop_ind
+
+        %Record small index
+        small_index(i,1) = i;
+
+        %On the first pass engage the find closest time function to grab
+        %the first index
+        if(i == 1)
+            
+            %Find the index that matches
+            big_index (i,1)     = find_closest_time(big_time, small_time(i));
+
+            %If index is 0, revert back to 1
+            if(big_index(i) == 0)
+                big_index(i,1) = 1;
+            end
+
+        else
+
+            %On subsequent passes, engage a faster method
+
+            %Save off last index to index temp
+            index_temp  = last_index;
+
+            %Grab time delta between current small time, and the last saved
+            %index for big time
+            delta1      = abs(small_time(i) - big_time(index_temp));
+
+            %Increment index temp
+            index_temp  = index_temp + 1;
+
+            %Check that we haven't maxed out
+            if(index_temp > big_time_max_ind)
+                index_temp = index_temp - 1;
+            end
+
+            %Grab the time between current small time, and the next index
+            %of big time
+            delta2      = abs(small_time(i) - big_time(index_temp));
+
+            while(delta2 <= delta1)
+
+                %Grab time delta between current small time, and the last saved
+                %index for big time
+                delta1      = abs(small_time(i) - big_time(index_temp));
+    
+                %Increment index temp
+                index_temp  = index_temp + 1;
+
+                %Check that index doesn't exceed max
+                if(index_temp > big_time_max_ind)
+                    big_index(i,1) = index_temp - 1;
+                    break;
+                end
+    
+                %Grab the time between current small time, and the next index
+                %of big time
+                delta2      = abs(small_time(i) - big_time(index_temp));
+
+            end
+    
+            %Save index
+            big_index(i,1) = index_temp - 1;
+
+        end
+
+        %Record the last used index
+        last_index  = big_index(i);
+
+    end
+
+    %Set indecies
+    if(step_size)
+        index1.mask     = big_index ~= 0;
+        index2.mask     = small_index ~= 0;
+        index1.index    = big_index(index1.mask);
+        index2.index    = small_index(index2.mask);
+    else
+        index2.mask     = big_index ~= 0;
+        index1.mask     = small_index ~= 0;
+        index2.index    = big_index(index2.mask);
+        index1.index    = small_index(index1.mask);
+    end
+
+end
+

@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function extended_satellites = load_extended_satellites_log(filename, time_interval)
+function extended_satellites = load_extended_satellites_log(filename, time_filter)
 %This function reads in externded satellites data
 
     %*********************************************************************%
@@ -43,8 +43,7 @@ function extended_satellites = load_extended_satellites_log(filename, time_inter
     %*********************************************************************%
 
     %Process time
-    [extended_satellites, time_mask] = process_time_log_file(extended_satellites, data(:,1:2), time_interval);
-
+    [extended_satellites, time_mask] = process_time_log_file(extended_satellites, data(:,1:2), time_filter);
     %Load in extended satellites data
 	extended_satellites.packet_count = data(time_mask,3);
     extended_satellites.packet_number = data(time_mask,4);

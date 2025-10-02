@@ -86,6 +86,8 @@ function hist_fig = Plot_Time_History(times, input_vectors, plot_info_input)
     end
 
     %Create legend if more than one value
-    legend(plot_info.legend, 'Interpreter', 'none')
+    if(~isempty(plot_info.legend))
+        legend(plot_info.legend, 'Interpreter', 'none');
+    end
 
 end

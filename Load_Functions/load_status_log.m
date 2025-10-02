@@ -1,4 +1,4 @@
-function status_data = load_status_log(filename, time_interval)
+function status_data = load_status_log(filename, time_filter)
 %This function reads in system status data
 
     %*********************************************************************%
@@ -16,8 +16,7 @@ function status_data = load_status_log(filename, time_interval)
     %*********************************************************************%
     
     %Process time
-    [status_data, time_mask] = process_time_log_file(status_data, data(:,1:2), time_interval);
-
+    [status_data, time_mask] = process_time_log_file(status_data, data(:,1:2), time_filter);
     %Grab system status data
     status_data.system_status.system_failure = data(time_mask,3);
     status_data.system_status.accelerometer_failure = data(time_mask,4);

@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function [log_data, time_mask] = process_time_log_file(log_data, time_data, time_interval)
+function [log_data, time_mask] = process_time_log_file(log_data, time_data, time_filter)
 %This function process time from log files
 
     %*********************************************************************%
@@ -36,7 +36,7 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
     
     %Check for time interval
     %The time interval is exclusively for time duration in seconds
-    if(~isempty(time_interval))
+    if(~isempty(time_filter.time_interval))
 
         %Mask time
         mask_time = 1;
@@ -45,8 +45,8 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
         time_mask   = logical(zeros(size(time_data(:,1))));
 
         %Set min and max time
-        time_min    = time_interval(1);
-        time_max    = time_interval(2);
+        time_min    = time_filter.time_interval(1);
+        time_max    = time_filter.time_interval(2);
 
     else
 
@@ -63,7 +63,7 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
     %*********************************************************************%
 
     %Grab uix time
-    log_data.unix_time_seconds = time_data(:,1) + time_data(:,2)/1000000;
+    log_data.unix_time_seconds  = time_data(:,1) + time_data(:,2)/1000000;
 
     %*********************************************************************%
     %Begin processing duration in seconds
@@ -100,14 +100,25 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
     %Check mask time bool
     if(mask_time)
 
+        %time_type definitions
+        %1 - date time
+        %2 - duration
+        if(time_filter.time_type == 1) %date time
+            error("Date time is not supported for time filtering!");
+        elseif(time_filter.time_type == 2) %duration
+            mask_time   = log_data.duration_seconds;
+        elseif(time_filter.time_type == 3) %Unix Time
+            mask_time   = log_data.unix_time_seconds;
+        end
+
         %Create mask
-        time_mask   = log_data.duration_seconds >= time_min & log_data.duration_seconds <= time_max;
+        time_mask   = mask_time >= time_min & mask_time <= time_max;
 
         %Check to make sure time mask is not null
         if(isempty(find(time_mask == 1)))
             fprintf('***********ERROR***********\n');
             fprintf('Incorrect time interval given, time interval falls outside of duration!\n');
-            fprintf('Time Interval:  %f, %f\n', time_interval(1), time_interval(2));
+            fprintf('Time Interval:  %f, %f\n', time_filter.time_interval(1), time_filter.time_interval(2));
             fprintf('Time Duration [Min, Max]:  %f, %f\n', min(log_data.duration_seconds), max(log_data.duration_seconds));
             fprintf('***********ERROR***********\n');
             error("Incorrect time interval given, time interval falls outside of duration!");
@@ -119,5 +130,8 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
         log_data.datetime               = log_data.datetime(time_mask);
 
     end
+
+    %Grab min unix time
+    log_data.utc_time_min       = min(log_data.unix_time_seconds);
 
 end

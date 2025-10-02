@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function geoid_height_data = load_geoid_height_log(filename, time_interval)
+function geoid_height_data = load_geoid_height_log(filename, time_filter)
 %This function reads in geoid height log
 
     %*********************************************************************%
@@ -45,8 +45,7 @@ function geoid_height_data = load_geoid_height_log(filename, time_interval)
     %*********************************************************************%
     
     %Process time
-    [geoid_height_data, time_mask] = process_time_log_file(geoid_height_data, data(:,1:2), time_interval);
-
+    [geoid_height_data, time_mask] = process_time_log_file(geoid_height_data, data(:,1:2), time_filter);
     %Load raw data
     geoid_height_data.geoid_height = data(time_mask,3);
 

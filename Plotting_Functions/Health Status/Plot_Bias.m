@@ -20,6 +20,10 @@ function figs = Plot_Bias(bias, time_type)
             plotting_time   = bias.duration_seconds;
         elseif(time_type == 3) %UTC time
             plotting_time   = bias.unix_time_seconds;
+        elseif(time_type == 4) %UTC time Normalized
+            plotting_time   = bias.unix_time_seconds - bias.utc_time_min;
+        elseif(time_type == 5) %Index
+            plotting_time   = [1:length(bias.datetime)];
         end
 
     else

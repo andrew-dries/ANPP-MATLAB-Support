@@ -20,6 +20,10 @@ function figs = Plot_Raw_Sensors(raw_sensors, time_type)
             plotting_time   = raw_sensors.duration_seconds;
         elseif(time_type == 3) %UTC Time
             plotting_time   = raw_sensors.unix_time_seconds;
+        elseif(time_type == 4) %UTC time Normalized
+            plotting_time   = raw_sensors.unix_time_seconds - raw_sensors.utc_time_min;
+        elseif(time_type == 5) %Index
+            plotting_time   = [1:length(raw_sensors.datetime)];
         end
 
     else

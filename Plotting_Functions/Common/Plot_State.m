@@ -21,6 +21,10 @@ function figs = Plot_State(state, device_information, time_type)
             plotting_time   = state.duration_seconds;
         elseif(time_type == 3) %Unix Time
             plotting_time   = state.unix_time_seconds;
+        elseif(time_type == 4) %UTC time Normalized
+            plotting_time   = state.unix_time_seconds - state.utc_time_min;
+        elseif(time_type == 5) %Index
+            plotting_time   = [1:length(state.datetime)];
         end
 
     else

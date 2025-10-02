@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function euler_sd_data = load_euler_sd_log(filename, time_interval)
+function euler_sd_data = load_euler_sd_log(filename, time_filter)
 %This function reads in raw sensor data
 
     %*********************************************************************%
@@ -43,8 +43,7 @@ function euler_sd_data = load_euler_sd_log(filename, time_interval)
     %*********************************************************************%
 
     %Process time
-    [euler_sd_data, time_mask] = process_time_log_file(euler_sd_data, data(:,1:2), time_interval);
-
+    [euler_sd_data, time_mask] = process_time_log_file(euler_sd_data, data(:,1:2), time_filter);
     %Extract euler standard deviation data
     euler_sd_data.standard_deviation = data(time_mask,3:5);
 

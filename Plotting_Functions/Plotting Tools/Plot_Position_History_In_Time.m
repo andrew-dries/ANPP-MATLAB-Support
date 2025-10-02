@@ -50,14 +50,11 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
         end
     end
 
-    %Video length in time
-    frames_per_second           = 30; %seconds
-    frame_time_step             = 0.1;  %seconds
-    frame_time_width            = 10;
-    number_frames               = round((max_time-min_time)/frame_time_step);
+    %Video number of frames
+    number_frames               = round((max_time-min_time)/plot_info_input.frame_time_step);
 
     %Time vector in seconds
-    time_vector                 = min_time:frame_time_step:max_time;
+    time_vector                 = min_time:plot_info_input.frame_time_step:max_time;
     %*********************************************************************%
 
     %***********Create Video Object***********%
@@ -66,7 +63,7 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
     video_obj = VideoWriter("Position_Video.avi");
 
     %Set frame rate
-    video_obj.FrameRate = frames_per_second;
+    video_obj.FrameRate = plot_info_input.frames_per_second;
 
     %Open video obj
     open(video_obj);
@@ -109,7 +106,7 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
         for j = 1:vector_width
 
             %Create time mask
-            mask = input_times.(fields.times{j}) >= (min_time + frame_time_step*(i-1) - frame_time_width) & input_times.(fields.times{j}) < (min_time + frame_time_step*i);
+            mask = input_times.(fields.times{j}) >= (min_time + plot_info_input.frame_time_step*(i-1) - plot_info_input.frame_time_width) & input_times.(fields.times{j}) < (min_time + plot_info_input.frame_time_step*i);
 
             %Find most current time index
             current_ind = max(find(mask == 1));

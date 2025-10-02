@@ -1,4 +1,4 @@
-function figs = Plot_Dual_GNSS_Heading(raw_gnss, time_type)
+function figs = Plot_Gyrocompass_Heading(state, time_type)
 %Plot_Dual_GNSS_Heading Plots important information to understand Dual GNSS
 %Heading performance
 
@@ -16,11 +16,13 @@ function figs = Plot_Dual_GNSS_Heading(raw_gnss, time_type)
         %2 - duration
         
         if(time_type == 1) %date time
-            plotting_time   = raw_gnss.datetime;
+            plotting_time   = state.datetime;
         elseif(time_type == 2) %duration
-            plotting_time   = raw_gnss.duration_seconds;
+            plotting_time   = state.duration_seconds;
         elseif(time_type == 3) %Unix Time
-            plotting_time   = raw_gnss.unix_time_seconds;
+            plotting_time   = state.unix_time_seconds;
+        elseif(time_type == 4) %UTC time Normalized
+            plotting_time   = state.unix_time_seconds - state.utc_time_min;
         end
 
     else
@@ -35,7 +37,7 @@ function figs = Plot_Dual_GNSS_Heading(raw_gnss, time_type)
     %*********************************************************************%
 
     %Create figure
-    figure('Name','Dual GNSS Heading - Heading Performance');
+    figs(1) =figure('Name','Dual GNSS Heading - Heading Performance');
     subplot(2,2,2);
 
     %Dual GNSS Heading Status

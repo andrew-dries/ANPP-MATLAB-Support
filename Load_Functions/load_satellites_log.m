@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function satellites_data = load_satellites_log(filename)
+function satellites_data = load_satellites_log(filename, time_filter)
 %This function reads in raw sensor data
 
     %*********************************************************************%
@@ -41,18 +41,18 @@ function satellites_data = load_satellites_log(filename)
     %*********************************************************************%
     %Begin processing data
     %*********************************************************************%
-    
+
     %Process time
-    satellites_data = process_time_log_file(satellites_data, data(:,1:2));
+    [satellites_data, time_mask] = process_time_log_file(satellites_data, data(:,1:2), time_filter);
 
     %Extract satellite data
-    satellites_data.hdop = data(:,3);
-    satellites_data.vdop = data(:,4);
-    satellites_data.gps_satellites = data(:,5);
-    satellites_data.glonass_satellites = data(:,6);
-    satellites_data.beidou_satellites = data(:,7);
-    satellites_data.galileo_satellites = data(:,8);
-    satellites_data.sbas_satellites = data(:,9);
-	satellites_data.total_satellites = data(:,5) + data(:,6) + data(:,7) + data(:,8) + data(:,9);
+    satellites_data.hdop = data(time_mask,3);
+    satellites_data.vdop = data(time_mask,4);
+    satellites_data.gps_satellites = data(time_mask,5);
+    satellites_data.glonass_satellites = data(time_mask,6);
+    satellites_data.beidou_satellites = data(time_mask,7);
+    satellites_data.galileo_satellites = data(time_mask,8);
+    satellites_data.sbas_satellites = data(time_mask,9);
+	satellites_data.total_satellites = data(time_mask,5) + data(time_mask,6) + data(time_mask,7) + data(time_mask,8) + data(time_mask,9);
 
 end

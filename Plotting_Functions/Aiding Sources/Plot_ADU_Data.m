@@ -71,6 +71,19 @@ function figs = Plot_ADU_Data(adu_data, wind_data, state_data, raw_gnss, time_ty
                 plotting_time_gnss      = raw_gnss.unix_time_seconds;
             end
 
+        elseif(time_type == 4) %Unix Time Normalized
+            plotting_time_adu       = adu_data.unix_time_seconds - adu_data.utc_time_min;
+            plotting_time_state     = state_data.unix_time_seconds - state_data.utc_time_min;
+
+            %Check for wind data
+            if(wind_exists)
+                plotting_time_wind      = wind_data.unix_time_seconds - wind_data.utc_time_min;
+            end
+
+            %Check for GNSS data
+            if(gnss_exists)
+                plotting_time_gnss      = raw_gnss.unix_time_seconds - raw_gnss.utc_time_min;
+            end
         end
 
     else

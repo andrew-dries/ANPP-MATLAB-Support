@@ -50,6 +50,8 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
             plotting_time_raw_gnss      = log_data.raw_gnss.duration_seconds;
         elseif(time_type == 3) %UTC time
             plotting_time_raw_gnss      = log_data.raw_gnss.unix_time_seconds;
+        elseif(time_type == 4) %UTC time Normalized
+            plotting_time               = log_data.unix_time_seconds - log_data.utc_time_min;
         end
 
     end

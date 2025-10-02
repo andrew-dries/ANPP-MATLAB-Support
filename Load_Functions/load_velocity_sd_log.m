@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function velocity_sd = load_velocity_sd_log(filename, time_interval)
+function velocity_sd = load_velocity_sd_log(filename, time_filter)
 %This function reads in velocity standard deviation data
 
     %*********************************************************************%
@@ -43,8 +43,7 @@ function velocity_sd = load_velocity_sd_log(filename, time_interval)
     %*********************************************************************%
     
     %Process time
-    [velocity_sd, time_mask] = process_time_log_file(velocity_sd, data(:,1:2), time_interval);
-
+    [velocity_sd, time_mask] = process_time_log_file(velocity_sd, data(:,1:2), time_filter);
     %Grab velocity standard deviation
     velocity_sd.standard_deviation = data(:,3:5);
     

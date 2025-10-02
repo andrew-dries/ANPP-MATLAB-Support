@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function detailed_satellites_data = load_detailed_satellites_log(filename, time_interval)
+function detailed_satellites_data = load_detailed_satellites_log(filename, time_filter)
 %This function reads in raw sensor data
 
     %*********************************************************************%
@@ -43,8 +43,7 @@ function detailed_satellites_data = load_detailed_satellites_log(filename, time_
     %*********************************************************************%
 
     %Process time
-    [detailed_satellites_data, time_mask] = process_time_log_file(detailed_satellites_data, data(:,1:2), time_interval);
-
+    [detailed_satellites_data, time_mask] = process_time_log_file(detailed_satellites_data, data(:,1:2), time_filter);
     %Grab detailed satellites data
     detailed_satellites_data.packet_count = data(time_mask,3);
 	detailed_satellites_data.satellite_system = data(time_mask,4);

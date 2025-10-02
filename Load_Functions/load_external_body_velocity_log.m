@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function external_body_velocity = load_external_body_velocity_log(filename, time_interval)
+function external_body_velocity = load_external_body_velocity_log(filename, time_filter)
 %This function reads in external body velocity data
 
     %*********************************************************************%
@@ -43,8 +43,7 @@ function external_body_velocity = load_external_body_velocity_log(filename, time
     %*********************************************************************%
 
     %Process time
-    [external_body_velocity, time_mask] = process_time_log_file(external_body_velocity, data(:,1:2), time_interval);
-
+    [external_body_velocity, time_mask] = process_time_log_file(external_body_velocity, data(:,1:2), time_filter);
     %Grab velocity
     external_body_velocity.velocity = data(time_mask,3:5);
 

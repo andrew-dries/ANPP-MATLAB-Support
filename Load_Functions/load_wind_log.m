@@ -27,7 +27,7 @@
 % * DEALINGS IN THE SOFTWARE.
 % */
 
-function wind_data = load_wind_log(filename, time_interval)
+function wind_data = load_wind_log(filename, time_filter)
 %This function reads in bias state data
 
     %*********************************************************************%
@@ -45,8 +45,7 @@ function wind_data = load_wind_log(filename, time_interval)
     %*********************************************************************%
     
     %Process time
-    [wind_data, time_mask] = process_time_log_file(wind_data, data(:,1:2), time_interval);
-
+    [wind_data, time_mask] = process_time_log_file(wind_data, data(:,1:2), time_filter);
     %Load raw data
     wind_data.velocity = data(time_mask,3:4);
     wind_data.standard_deviation = data(time_mask,5);
