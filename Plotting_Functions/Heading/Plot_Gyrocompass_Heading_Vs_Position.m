@@ -1,4 +1,4 @@
-function figs = Plot_Gyrocompass_Heading_Vs_Position(state, raw_gnss, create_figure, position_type)
+function figs = Plot_Gyrocompass_Heading_Vs_Position(state, raw_gnss, create_figure, position_type, plot_options)
 %Plot_Dual_GNSS_Heading Plots important information to understand Dual GNSS
 %Heading performance
 
@@ -8,12 +8,15 @@ function figs = Plot_Gyrocompass_Heading_Vs_Position(state, raw_gnss, create_fig
     %Initializations
     %*********************************************************************%
 
+    %Set figure name
+    fig_names = {"Gyrcompass Heading vs Position"};
+
     %Initialize figure
     figs = [];
     
     %Check to create figure
     if(create_figure)
-        figs(1) = figure('Name','Gyrcompass Heading vs Position');
+        figs(1) = figure('Name',fig_names{1});
     end
     
     %Determine if using Raw GNSS or State Position
@@ -90,8 +93,17 @@ function figs = Plot_Gyrocompass_Heading_Vs_Position(state, raw_gnss, create_fig
 
     %Set title information
     title("Gyrocompass Heading vs Position");
-    legend({"Position", "Heading"})
-    set(gca, 'FontWeight', 'bold', 'FontSize', 14)
+    legend({"Position", "Heading"});
+    set(gca, 'FontWeight', 'bold', 'FontSize', 14);
+
+    %*********************************************************************%
+    %Call Figure Saving Functions
+    %*********************************************************************%
+    
+    %Call save figure and pngs
+    if(plot_options.save_plots)
+        save_figures_and_pngs(figs, fig_names);
+    end
     
 end
 

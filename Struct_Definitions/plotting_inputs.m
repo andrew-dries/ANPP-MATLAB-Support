@@ -27,8 +27,13 @@ classdef plotting_inputs
 
         %For plotting gyrocompassing heading versus position
         plot_gyrocompass_heading_vs_pos     = 0;
+
+        %For saving plots
+        save_plots                          = 0;
+
+        %For plotting time type
+        plotting_time_type                  = 0; %1 - date time, 2 - duration, 3 = unix time, 4 = unix time normalized, 5 = counts
         
     end
 
 end
-

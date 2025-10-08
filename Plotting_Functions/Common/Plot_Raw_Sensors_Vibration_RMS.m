@@ -1,4 +1,4 @@
-function vibe_rms = Plot_Raw_Sensors_Vibration_RMS(log_data)
+function vibe_rms = Plot_Raw_Sensors_Vibration_RMS(log_data, plot_options)
 %This function plots the raw sensors vibration RMS to characterize the
 %vibration environment.
 
@@ -17,12 +17,15 @@ function vibe_rms = Plot_Raw_Sensors_Vibration_RMS(log_data)
         error("Raw Sensors struct does not exist in log_data");
     end
 
+    %Set figure name
+    fig_names = {"Inertial Rates RMS"};
+
     %*********************************************************************%
     %Plot Accel & Gyro RMS
     %*********************************************************************%
     
     %Make figure
-    vibe_rms = figure('Name',"Inertial Rates RMS");
+    vibe_rms = figure('Name',fig_names{1});
     
     %Subplot
     subplot(2,1,1);
@@ -77,6 +80,15 @@ function vibe_rms = Plot_Raw_Sensors_Vibration_RMS(log_data)
     
     %Make plot
     vibe_rms                = Plot_Time_History(times, input_vectors, plot_info);
+
+    %*********************************************************************%
+    %Call Figure Saving Functions
+    %*********************************************************************%
+    
+    %Call save figure and pngs
+    if(plot_options.save_plots)
+        save_figures_and_pngs(vibe_rms, fig_names);
+    end
 
 end
 

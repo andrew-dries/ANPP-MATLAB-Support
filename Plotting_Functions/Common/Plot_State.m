@@ -1,4 +1,4 @@
-function figs = Plot_State(state, device_information, time_type)
+function figs = Plot_State(state, device_information, plot_options)
 %Plot State Plots time histories of state inputs
 
     %Inputs: state struct as output by load_state_log.m
@@ -15,15 +15,15 @@ function figs = Plot_State(state, device_information, time_type)
         %1 - date time
         %2 - duration
         
-        if(time_type == 1) %date time
+        if(plot_options.plotting_time_type == 1) %date time
             plotting_time   = state.datetime;
-        elseif(time_type == 2) %duration
+        elseif(plot_options.plotting_time_type == 2) %duration
             plotting_time   = state.duration_seconds;
-        elseif(time_type == 3) %Unix Time
+        elseif(plot_options.plotting_time_type == 3) %Unix Time
             plotting_time   = state.unix_time_seconds;
-        elseif(time_type == 4) %UTC time Normalized
+        elseif(plot_options.plotting_time_type == 4) %UTC time Normalized
             plotting_time   = state.unix_time_seconds - state.utc_time_min;
-        elseif(time_type == 5) %Index
+        elseif(plot_options.plotting_time_type == 5) %Index
             plotting_time   = [1:length(state.datetime)];
         end
 
@@ -34,10 +34,15 @@ function figs = Plot_State(state, device_information, time_type)
 
     end
 
+    %Set figure names
+    fig_names = {"Report Page 1 - State", ...
+                 "Report Page 2 - Filter Status", ...
+                 "Report Page 3 - System Status"};
+
     %*********************************************************************%
     %Begin Plotting
     %*********************************************************************%
-    figs(1) = figure('Name','Report Page 2 - State');
+    figs(1) = figure('Name',fig_names{1});
 	subplot(2,2,1);
 	plot(plotting_time,state.orientation, ".");
 	title('XYZ Orientation');
@@ -82,7 +87,7 @@ function figs = Plot_State(state, device_information, time_type)
     set(gca, 'FontWeight', 'bold', 'FontSize', 14)
 
 	% Report Page 3
-    figs(2) = figure('Name','Report Page 3 - Filter Status');
+    figs(2) = figure('Name',fig_names{2});
 
 	subplot(3,3,1);
 	plot(plotting_time,state.filter_status.orientation_initialised);
@@ -199,7 +204,7 @@ function figs = Plot_State(state, device_information, time_type)
     set(gca, 'FontWeight', 'bold', 'FontSize', 14)
 
     % Report Page 4
-    figs(3) = figure('Name','Report Page 4 - System Status');
+    figs(3) = figure('Name',fig_names{3});
 
 	subplot(4,4,1);
 	if max(state.system_status.system_failure) == 1
@@ -437,5 +442,13 @@ function figs = Plot_State(state, device_information, time_type)
     %Set font 14 bold
     set(gca, 'FontWeight', 'bold', 'FontSize', 14)
 
-end
+    %*********************************************************************%
+    %Call Figure Saving Functions
+    %*********************************************************************%
 
+    %Call save figure and pngs
+    if(plot_options.save_plots)
+        save_figures_and_pngs(figs, fig_names);
+    end
+
+end

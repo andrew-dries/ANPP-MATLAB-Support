@@ -6,7 +6,7 @@ close all; clear; clc;
 %*************************************************************************%
 
 %Path to your ANPP MATLAB Support Directory
-ANPP_MATLAB_Support_Path    = 'C:\Users\andrewdries\Documents\MATLAB\Support\ANPP-MATLAB-Support';
+ANPP_MATLAB_Support_Path    = 'C:\Users\andrewdries\Documents\Software Development\ANPP-MATLAB-Support';
 
 %Add paths
 addpath(strcat(ANPP_MATLAB_Support_Path,'\Search_Path_Functions'));
@@ -18,6 +18,10 @@ Add_Common_Paths_Function(ANPP_MATLAB_Support_Path);
 
 %Create plotting options struct
 plot_options = plotting_inputs();
+
+%Set generic plotting options
+plot_options.save_plots                             = 0;
+plot_options.plotting_time_type                     = 4; %1 - date time, 2 - duration, 3 = unix time, 4 = unix time normalized, 5 = counts
 
 %Set plotting options
 plot_options.plot_heading_analysis                  = 0;
@@ -33,14 +37,10 @@ plot_options.plot_raw_sensors_vibration_rms         = 0;
 %Time intervals
 %fprintf("[%2.12d, %2.12d]\n", log_data.state.unix_time_seconds(950446), log_data.state.unix_time_seconds(1066263))
 
-%Plot Time
+%Time Input
 time_filter.time_interval   = [];
 
-%Time type
 time_filter.time_type       = 3; %1 - date time, 2 - duration, 3 = unix time
-
-%Create time type
-time_type                   = 4; %1 - date time, 2 - duration, 3 = unix time, 4 = unix time normalized
 
 %*************************************************************************%
 %Load Data
@@ -59,47 +59,36 @@ end
 %*************************************************************************%
 
 %Call plot state
-state_figs          = Plot_State(log_data.state, log_data.device_information, time_type);
+state_figs          = Plot_State(log_data.state, log_data.device_information, plot_options);
 
 %Call plot raw sensors
-raw_sensors_figs    = Plot_Raw_Sensors(log_data.raw_sensors, time_type);
+raw_sensors_figs    = Plot_Raw_Sensors(log_data.raw_sensors, plot_options);
 
-%*************************************************************************%
 %Plot Bias
+bias_figs           = Plot_Bias(log_data.bias, plot_options);
+
+%Plot heading history for different GNSS fix types
+%gyro_heading_figs   = Plot_Gyrocompass_Heading_Vs_Position(log_data.state, log_data.raw_gnss, 1, 2, plot_options);
+
+%*************************************************************************%
+%State position vs GNSS position
 %*************************************************************************%
 
-%Determing plotting logic
-if(plot_options.plot_bias)
-
-    %Plot bias
-    bias_figs   = Plot_Bias(log_data.bias, time_type);
-
-end
+%Plot Raw GNSS vs State Position
+gnss_vs_state_figs = Plot_Raw_GNSS_vs_State_Position(log_data, plot_options);
 
 %*************************************************************************%
 %Plot Error over Distance Travelled
 %*************************************************************************%
 
 %Determing plotting logic
-if(plot_options.plot_gyrocompass_heading_vs_pos)
+if(plot_options.plot_error_over_distance_travelled)
 
     %Plot error versus distance travelled
-    dist_err = Plot_Position_Error_With_GNSS_Truth(log_data);
+    dist_err = Plot_Position_Error_With_GNSS_Truth(log_data, plot_options);
 
     %Plot error versus distance travelled for jammed / spoofed
-    %dist_err = Plot_Position_Error_Jammed_Spoofed(log_data);
-
-end
-
-%*************************************************************************%
-%Plot Gyrocomapss Heading Versus Position
-%*************************************************************************%
-
-%Determing plotting logic
-if(plot_options.plot_gyrocompass_heading_vs_pos)
-
-    %Plot gyrocompass heading versus position
-    dist_err = Plot_Gyrocompass_Heading_Vs_Position(log_data);
+    %dist_err = Plot_Position_Error_Jammed_Spoofed(log_data, plot_options);
 
 end
 
@@ -111,7 +100,7 @@ end
 if(plot_options.plot_acceleration_error_estimates)
 
     %Plot acceleration error estimates
-    accel_error_figs = Plot_Acceleration_Error_Estimates(log_data);
+    accel_error_figs = Plot_Acceleration_Error_Estimates(log_data, plot_options);
 
 end
 
@@ -123,7 +112,7 @@ end
 if(plot_options.plot_heading_analysis)
 
     %Plot heading comparison
-    heading_plot = Plot_Heading_Comparison(log_data);
+    heading_plot = Plot_Heading_Comparison(log_data, plot_options);
 
 end
 
@@ -132,7 +121,7 @@ end
 %*************************************************************************%
 
 %Plot Raw Sensors Temperature
-temp_fig = Plot_Raw_Sensors_Temperature(log_data);
+temp_fig = Plot_Raw_Sensors_Temperature(log_data, plot_options);
 
 %*************************************************************************%
 %Plot Raw Sensors Vibration RMS
@@ -142,7 +131,7 @@ temp_fig = Plot_Raw_Sensors_Temperature(log_data);
 if(plot_options.plot_raw_sensors_vibration_rms)
 
     %Plot Raw Sensors Vibration RMS
-    vibe_rms = Plot_Raw_Sensors_Vibration_RMS(log_data);
+    vibe_rms = Plot_Raw_Sensors_Vibration_RMS(log_data, plot_options);
 
 end
 

@@ -1,4 +1,4 @@
-function dist_err = Plot_Position_Error_With_GNSS_Truth(log_data)
+function dist_err = Plot_Position_Error_With_GNSS_Truth(log_data, plot_options)
 %This function provides a standard method of calculating and displaying
 %error over distance travelled.  This utilizes the raw GNSS packet to
 %provide a source of truth for comparison, as well as the state packet to
@@ -25,10 +25,17 @@ function dist_err = Plot_Position_Error_With_GNSS_Truth(log_data)
     %Initialize dist_travel
     dist_travel = zeros(size(log_data.raw_gnss.position(:,1)));
 
+    %Set figure name
+    fig_names = {"Error Over Distance Travelled"};
+
     %*********************************************************************%
     %Plot Error over Distance Travelled
     %*********************************************************************%
-    dist_err                = figure('Name',"Error Over Distance Travelled");
+
+    %Create figure
+    dist_err                = figure('Name',fig_names{1});
+
+    %Subplot
     subplot(3,1,1)
     
     %Capture positional error
@@ -178,6 +185,15 @@ function dist_err = Plot_Position_Error_With_GNSS_Truth(log_data)
     
     %Make plot
     dist_err                = Plot_Time_History(times, input_vectors, plot_info);
+
+    %*********************************************************************%
+    %Call Figure Saving Functions
+    %*********************************************************************%
+    
+    %Call save figure and pngs
+    if(plot_options.save_plots)
+        save_figures_and_pngs(dist_err, fig_names);
+    end
 
 end
 

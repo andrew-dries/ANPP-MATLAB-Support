@@ -16,9 +16,9 @@ function hist_fig = Plot_Time_History(times, input_vectors, plot_info_input)
     
     %Create Time History Plot figure
     if(plot_info_input.create_figure)
-        hist_fig = figure('Name','Plot Time History');
+        hist_fig = figure('Name',plot_info_input.figure_name);
     else
-        hist_fig = [];
+        hist_fig = gcf;
     end
     
     %Create Time History Plot figure properties

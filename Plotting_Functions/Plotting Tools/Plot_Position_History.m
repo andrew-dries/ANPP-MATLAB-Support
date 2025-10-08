@@ -15,7 +15,7 @@ function position_fig = Plot_Position_History(input_positions, times, plot_info_
     %*************************************************************************%
     
     %Create Positions figure
-    position_fig = figure('Name',"Plot Position History");
+    position_fig = figure('Name', plot_info_input.figure_name);
     
     %Create Positions figure properties
     grid on;

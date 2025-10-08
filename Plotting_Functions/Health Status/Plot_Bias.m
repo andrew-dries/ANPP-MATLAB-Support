@@ -1,4 +1,4 @@
-function figs = Plot_Bias(bias, time_type)
+function figs = Plot_Bias(bias, plot_options)
 %Plots information about bias
 
     %Inputs:bias struct, and time type
@@ -14,15 +14,15 @@ function figs = Plot_Bias(bias, time_type)
         %1 - date time
         %2 - duration
         
-        if(time_type == 1) %date time
+        if(plot_options.plotting_time_type == 1) %date time
             plotting_time   = bias.datetime;
-        elseif(time_type == 2) %duration
+        elseif(plot_options.plotting_time_type == 2) %duration
             plotting_time   = bias.duration_seconds;
-        elseif(time_type == 3) %UTC time
+        elseif(plot_options.plotting_time_type == 3) %Unix Time
             plotting_time   = bias.unix_time_seconds;
-        elseif(time_type == 4) %UTC time Normalized
+        elseif(plot_options.plotting_time_type == 4) %UTC time Normalized
             plotting_time   = bias.unix_time_seconds - bias.utc_time_min;
-        elseif(time_type == 5) %Index
+        elseif(plot_options.plotting_time_type == 5) %Index
             plotting_time   = [1:length(bias.datetime)];
         end
 
@@ -33,6 +33,12 @@ function figs = Plot_Bias(bias, time_type)
 
     end
 
+    %Set figure name
+    fig_names = {"Gyroscope Bias", ...
+                 "Accelerometer Bias", ...
+                 "Bias Status", ...
+                 "Random"};
+
     %*********************************************************************%
     %Begin Plotting
     %*********************************************************************%
@@ -40,7 +46,7 @@ function figs = Plot_Bias(bias, time_type)
     %**********Raw Sensors**********%
 
     %Gyroscope Bias
-    figs(1) = figure('Name','Gyroscope Bias');
+    figs(1) = figure('Name',fig_names{1});
 
     %Gyroscope Bias
 	subplot(2,2,1);
@@ -85,7 +91,7 @@ function figs = Plot_Bias(bias, time_type)
     set(gca, 'FontWeight', 'bold', 'FontSize', 14)
 
     %Accelerometer Bias
-    figs(1) = figure('Name','Accelerometer Bias');
+    figs(2) = figure('Name',fig_names{2});
 
     %Accelerometer Bias
 	subplot(2,2,1);
@@ -130,7 +136,7 @@ function figs = Plot_Bias(bias, time_type)
 	%**********Bias Status**********%
 
     %Gyroscope Bias
-    figs(1) = figure('Name','Bias Status');
+    figs(3) = figure('Name',fig_names{3});
 
     %1 Accelerometer Bias Rejection Counter
 	subplot(2,5,1);
@@ -235,7 +241,7 @@ function figs = Plot_Bias(bias, time_type)
     %**********Random**********%
 
     %Gyroscope Bias
-    figs(1) = figure('Name','Random');
+    figs(4) = figure('Name',fig_names{4});
 
     %1 QNH
 	subplot(3,1,1);
@@ -267,6 +273,14 @@ function figs = Plot_Bias(bias, time_type)
     %Set font 14 bold
     set(gca, 'FontWeight', 'bold', 'FontSize', 14)
 
+    %*********************************************************************%
+    %Call Figure Saving Functions
+    %*********************************************************************%
+    
+    %Call save figure and pngs
+    if(plot_options.save_plots)
+        save_figures_and_pngs(figs, fig_names);
+    end
 
 end
 

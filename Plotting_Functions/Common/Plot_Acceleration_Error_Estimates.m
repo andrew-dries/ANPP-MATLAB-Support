@@ -1,4 +1,4 @@
-function accel_error_figs = Plot_Acceleration_Error_Estimates(log_data)
+function accel_error_figs = Plot_Acceleration_Error_Estimates(log_data, plot_options)
 %UNTITLED Summary of this function goes here
 
     %*********************************************************************%
@@ -15,12 +15,15 @@ function accel_error_figs = Plot_Acceleration_Error_Estimates(log_data)
         error("Raw GNSS struct does not exist in log_data");
     end
 
+    %Set figure name
+    fig_names = {"Acceleration Error"};
+
     %*********************************************************************%
     %Estimate Bias from State vs GNSS Velocity
     %*********************************************************************%
     
     %Create figure
-    accel_error_figs = figure('name','Acceleration Error');
+    accel_error_figs = figure('name',fig_names{1});
     
     %Create subplot
     subplot(2,1,1);
@@ -91,6 +94,15 @@ function accel_error_figs = Plot_Acceleration_Error_Estimates(log_data)
     
     %Make plot
     accel_err               = Plot_Time_History(times, input_vectors, plot_info);
+
+    %*********************************************************************%
+    %Call Figure Saving Functions
+    %*********************************************************************%
+    
+    %Call save figure and pngs
+    if(plot_options.save_plots)
+        save_figures_and_pngs(accel_error_figs, fig_names);
+    end
 
 end
 

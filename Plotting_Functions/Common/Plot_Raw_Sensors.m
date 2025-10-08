@@ -1,4 +1,4 @@
-function figs = Plot_Raw_Sensors(raw_sensors, time_type)
+function figs = Plot_Raw_Sensors(raw_sensors, plot_options)
 %PLOT_RAW_SENSORS Plots time histories of raw sensors inputs
 
     %Inputs: raw_sensors struct as output by load_sensor_log.m
@@ -14,15 +14,15 @@ function figs = Plot_Raw_Sensors(raw_sensors, time_type)
         %1 - date time
         %2 - duration
         
-        if(time_type == 1) %date time
+        if(plot_options.plotting_time_type == 1) %date time
             plotting_time   = raw_sensors.datetime;
-        elseif(time_type == 2) %duration
+        elseif(plot_options.plotting_time_type == 2) %duration
             plotting_time   = raw_sensors.duration_seconds;
-        elseif(time_type == 3) %UTC Time
+        elseif(plot_options.plotting_time_type == 3) %Unix Time
             plotting_time   = raw_sensors.unix_time_seconds;
-        elseif(time_type == 4) %UTC time Normalized
+        elseif(plot_options.plotting_time_type == 4) %UTC time Normalized
             plotting_time   = raw_sensors.unix_time_seconds - raw_sensors.utc_time_min;
-        elseif(time_type == 5) %Index
+        elseif(plot_options.plotting_time_type == 5) %Index
             plotting_time   = [1:length(raw_sensors.datetime)];
         end
 
@@ -33,10 +33,13 @@ function figs = Plot_Raw_Sensors(raw_sensors, time_type)
 
     end
 
+    %Set figure name
+    fig_names = {"Report Page 1 - Raw Sensors"};
+
     %*********************************************************************%
     %Begin Plotting
     %*********************************************************************%
-    figs(1) = figure('Name','Report Page 1 - Raw Sensors');
+    figs(1) = figure('Name',fig_names{1});
 	subplot(2,2,1);
 	plot(plotting_time,raw_sensors.gyroscopes, ".", 'DisplayName',"raw_sensors.gyroscopes");
 	title('XYZ Gyroscopes');
@@ -81,7 +84,16 @@ function figs = Plot_Raw_Sensors(raw_sensors, time_type)
 	ylim([(min(raw_sensors.imu_temperature)-7),(max(raw_sensors.imu_temperature)+7)]);
 
     %Set font 14 bold
-    set(gca, 'FontWeight', 'bold', 'FontSize', 14)
+    set(gca, 'FontWeight', 'bold', 'FontSize', 14);
+
+    %*********************************************************************%
+    %Call Figure Saving Functions
+    %*********************************************************************%
+    
+    %Call save figure and pngs
+    if(plot_options.save_plots)
+        save_figures_and_pngs(figs, fig_names);
+    end
 
 end
 
