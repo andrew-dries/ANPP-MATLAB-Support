@@ -6,6 +6,15 @@ classdef plotting_inputs
     %Set property definitions
     properties
 
+        %For plotting state
+        plot_state                          = 0;
+
+        %For plotting raw sensors
+        plot_raw_sensors                    = 0;
+
+        %For plotting bias
+        plot_bias                           = 0;
+
         %For making video of position history
         make_video_position_history         = 0;
 
@@ -22,11 +31,14 @@ classdef plotting_inputs
         %For plotting raw sensors vibration rms
         plot_raw_sensors_vibration_rms      = 0;
 
-        %For plotting bias
-        plot_bias                           = 0;
-
         %For plotting gyrocompassing heading versus position
         plot_gyrocompass_heading_vs_pos     = 0;
+
+        %For plotting state vs gnss position
+        plot_state_vs_gnss_position         = 0;
+
+        %For plotting GNSS status including CEP50
+        plot_gnss_status                    = 0;
 
         %For saving plots
         save_plots                          = 0;

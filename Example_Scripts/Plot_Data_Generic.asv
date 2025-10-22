@@ -34,7 +34,7 @@ plot_options.plot_acceleration_error_estimates      = 0;
 plot_options.plot_raw_sensors_vibration_rms         = 0;
 plot_options.plot_gyrocompass_heading_vs_pos        = 0;
 plot_options.plot_state_vs_gnss_position            = 1;
-plot_options.plot_gnss_status                       = 1;
+plot
 
 %*************************************************************************%
 %Initializations
@@ -129,7 +129,7 @@ end
 if(plot_options.plot_gnss_status)
 
     %Plot GNSS Status
-    figs = Plot_GNSS_Status(log_data, plot_options);
+    figs = Plot_GNSS_Status(log_data, time_type_in);
 
 end
 

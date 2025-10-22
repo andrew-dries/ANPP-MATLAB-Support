@@ -45,6 +45,7 @@ function coarse_alignment_status = load_north_seeking_status(filename, time_filt
 
     %Process time
     [coarse_alignment_status, time_mask] = process_time_log_file(coarse_alignment_status, data(:,1:2), time_filter);
+    
     %Process other outputs
     coarse_alignment_status.northseeking_complete = data(time_mask,3);
     coarse_alignment_status.northseeking_cannot_start = data(time_mask,4);

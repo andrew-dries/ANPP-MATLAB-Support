@@ -28,9 +28,9 @@ function figs = Plot_Gyrocompass_Heading_Vs_Position(state, raw_gnss, create_fig
     elseif(position_type == 2) %Use Raw GNSS
         position                    = raw_gnss.position(raw_gnss.status.time_valid == 1,:);
         state_time_match            = find_closest_time_vector_fast(state.unix_time_seconds(state.filter_status.heading_initialised == 1), raw_gnss.unix_time_seconds(raw_gnss.status.time_valid == 1));
-        heading                     = state.orientation(state_time_match,3);
-        heading_standard_deviation  = min(extract_standard_deviation(state.duration_seconds(state_time_match), state.orientation(state_time_match,3), 0.5), 20);
-        time                        = state.unix_time_seconds(state_time_match);
+        heading                     = state.orientation(state_time_match.mask,3);
+        heading_standard_deviation  = min(extract_standard_deviation(state.duration_seconds(state_time_match.mask), state.orientation(state_time_match.mask,3), 0.5), 20);
+        time                        = state.unix_time_seconds(state_time_match.mask);
     end
 
     %Initialize interval

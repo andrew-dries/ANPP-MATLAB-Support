@@ -1,4 +1,4 @@
-function figs = Plot_GNSS_Status(log_data, time_type_in)
+function figs = Plot_GNSS_Status(log_data, plot_options)
 %PLOT_GNSS_STATUS Plots important information to understand GNSS
 %performance
 
@@ -14,9 +14,6 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
     extended_satellites_exist   = 0;
     
 
-    %Initialize figs
-    figs                       = [];
-
     %Determine time type
     if(nargin >= 2)
 
@@ -25,12 +22,12 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
         %2 - duration
         
         %Set time type
-        time_type = time_type_in;
+        time_type = plot_options.plotting_time_type;
 
     else
 
-        %Default to duration seconds
-        time_type = 2;
+        %Default to unix time normalized
+        time_type = 4;
 
     end
 
@@ -51,7 +48,9 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
         elseif(time_type == 3) %UTC time
             plotting_time_raw_gnss      = log_data.raw_gnss.unix_time_seconds;
         elseif(time_type == 4) %UTC time Normalized
-            plotting_time               = log_data.unix_time_seconds - log_data.utc_time_min;
+            plotting_time_raw_gnss      = log_data.raw_gnss.unix_time_seconds - log_data.raw_gnss.utc_time_min;
+        elseif(plot_options.plotting_time_type == 5) %Index
+            plotting_time_raw_gnss      = [1:length(log_data.raw_gnss.datetime)];
         end
 
     end
@@ -69,6 +68,10 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
             plotting_time_sat       = log_data.satellites.duration_seconds;
         elseif(time_type == 3) %UTC time
             plotting_time_sat       = log_data.satellites.unix_time_seconds;
+        elseif(time_type == 4) %UTC time Normalized
+            plotting_time_sat       = log_data.satellites.unix_time_seconds - log_data.satellites.utc_time_min;
+        elseif(plot_options.plotting_time_type == 5) %Index
+            plotting_time_sat       = [1:length(log_data.satellites.datetime)];
         end
 
     end
@@ -86,9 +89,18 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
             plotting_time_extsat    = log_data.extended_satellites.duration_seconds;
         elseif(time_type == 3) %UTC time
             plotting_time_extsat    = log_data.extended_satellites.unix_time_seconds;
+        elseif(time_type == 4) %UTC time Normalized
+            plotting_time_extsat    = log_data.extended_satellites.unix_time_seconds - log_data.extended_satellites.utc_time_min;
+        elseif(plot_options.plotting_time_type == 5) %Index
+            plotting_time_extsat    = [1:length(log_data.extended_satellites.datetime)];
         end
 
     end
+
+    %Set figure names
+    fig_names = {"GNSS Status - CEP 2D", ...
+                 "GNSS Status - Status Overview", ...
+                 "GNSS Status - Satellites Data Overview"};
 
     %*********************************************************************%
     %GNSS Status - CEP50
@@ -107,7 +119,7 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
     if(raw_gnss_exist)
 
         %Create figure
-        figs(2) = figure('Name','GNSS Status - Status Overview');
+        figs(2) = figure('Name',fig_names{2});
     
         %GNSS Fix Type
 	    axes1 = subplot(2,2,1);
@@ -242,7 +254,7 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
     if(satellites_exist)
 
          %Create GNSS status figure
-        figs(3) = figure('Name','GNSS Status - Satellites Data Overview');
+        figs(3) = figure('Name', fig_names{3});
 
         %Subplot - HDOP & VDOP plot
         subplot(2,1,1);
@@ -304,6 +316,15 @@ function figs = Plot_GNSS_Status(log_data, time_type_in)
         %Call plot time history mask function
         time_hist = Plot_Time_History(times, input_vectors, plot_info_input);
 
+    end
+
+    %*********************************************************************%
+    %Call Figure Saving Functions
+    %*********************************************************************%
+
+    %Call save figure and pngs
+    if(plot_options.save_plots)
+        save_figures_and_pngs(figs, fig_names);
     end
 
 end

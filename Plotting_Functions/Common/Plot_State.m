@@ -50,6 +50,7 @@ function figs = Plot_State(state, device_information, plot_options)
 	ylabel('Degrees');
 	xlabel('Seconds');
 	ylim([-200,400]);
+    grid on;
 
     %Set font 14 bold
     set(gca, 'FontWeight', 'bold', 'FontSize', 14)
@@ -61,6 +62,7 @@ function figs = Plot_State(state, device_information, plot_options)
 	title('Velocity');
 	ylabel('Kilometres / hour');
 	xlabel('Seconds');
+    grid on;
 
     %Set font 14 bold
     set(gca, 'FontWeight', 'bold', 'FontSize', 14)
