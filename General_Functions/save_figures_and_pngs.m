@@ -6,7 +6,7 @@ function save_figures_and_pngs(figs, names, path)
     %*********************************************************************%
 
     %Determine the number of figures / names
-    num_figs = length(names);
+    num_figs = length(figs);
 
     %If path does not exist, save in this folder
     if(nargin < 3)

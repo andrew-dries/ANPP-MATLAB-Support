@@ -13,7 +13,6 @@ function figs = Plot_GNSS_Status(log_data, plot_options)
     satellites_exist            = 0;
     extended_satellites_exist   = 0;
     
-
     %Determine time type
     if(nargin >= 2)
 
@@ -35,7 +34,7 @@ function figs = Plot_GNSS_Status(log_data, plot_options)
     log_fields = fields(log_data);
 
      %Look for satellites
-    if( ~isempty( find( contains(log_fields,'satellites') == 1 ) ) )
+    if( ~isempty( find( contains(log_fields,'raw_gnss') == 1 ) ) )
         
         %Set raw_gnss exist
         raw_gnss_exist = 1;

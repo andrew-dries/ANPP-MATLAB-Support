@@ -10,13 +10,12 @@ function figs = Plot_Gyrocompass_Heading_Vs_Position(state, raw_gnss, create_fig
 
     %Set figure name
     fig_names = {"Gyrcompass Heading vs Position"};
-
-    %Initialize figure
-    figs = [];
     
     %Check to create figure
     if(create_figure)
         figs(1) = figure('Name',fig_names{1});
+    else
+        figs(1) = gcf;
     end
     
     %Determine if using Raw GNSS or State Position

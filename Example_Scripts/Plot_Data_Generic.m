@@ -21,7 +21,7 @@ plot_options = plotting_inputs();
 
 %Set generic plotting options
 plot_options.save_plots                             = 0;
-plot_options.plotting_time_type                     = 5; %1 - date time, 2 - duration, 3 = unix time, 4 = unix time normalized, 5 = counts
+plot_options.plotting_time_type                     = 4; %1 - date time, 2 - duration, 3 = unix time, 4 = unix time normalized, 5 = counts
 
 %Set plotting options
 plot_options.plot_state                             = 1;
@@ -31,10 +31,10 @@ plot_options.plot_heading_analysis                  = 1;
 plot_options.make_video_position_history            = 0;
 plot_options.plot_error_over_distance_travelled     = 0;
 plot_options.plot_acceleration_error_estimates      = 0;
-plot_options.plot_raw_sensors_vibration_rms         = 0;
+plot_options.plot_raw_sensors_vibration_rms         = 1;
 plot_options.plot_gyrocompass_heading_vs_pos        = 0;
 plot_options.plot_state_vs_gnss_position            = 1;
-plot_options.plot_gnss_status                       = 1;
+plot_options.plot_gnss_status                       = 0;
 
 %*************************************************************************%
 %Initializations
