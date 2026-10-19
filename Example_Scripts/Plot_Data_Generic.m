@@ -25,26 +25,28 @@ plot_options.plotting_time_type                     = 4; %1 - date time, 2 - dur
 
 %Set plotting options
 plot_options.plot_state                             = 1;
-plot_options.plot_raw_sensors                       = 0;
+plot_options.plot_raw_sensors.plot                  = 1;
+plot_options.plot_raw_sensors.filter_length_s       = 30; %Filter length in seconds
 plot_options.plot_bias                              = 0;
 plot_options.plot_orientation_check                 = 0;
-plot_options.plot_heading_analysis.plot             = 0;
-plot_options.plot_heading_analysis.type             = 1;
+plot_options.plot_heading_analysis.plot             = 1;
+plot_options.plot_heading_analysis.type             = 0;
+plot_options.plot_heading_analysis.filter_length_s  = 60*5; %Filter length in seconds
 plot_options.plot_velocity_analysis                 = 0;
 plot_options.make_video_position_history.plot       = 0;
-plot_options.make_video_position_history.type       = 1;
+plot_options.make_video_position_history.type       = 1; %0 - Raw GNSS; 1 - External Position
 plot_options.plot_error_over_distance_travelled     = 0;
 plot_options.plot_position_error.plot               = 0;
 plot_options.plot_position_error.type               = 1;
 plot_options.plot_acceleration_error_estimates      = 0;
 plot_options.plot_raw_sensors_vibration_rms         = 0;
 plot_options.plot_gyrocompass_heading_vs_pos.plot   = 0;
-plot_options.plot_gyrocompass_heading_vs_pos.type   = 0;
+plot_options.plot_gyrocompass_heading_vs_pos.type   = 0; %0 - Raw GNSS; 1 - External Position
 plot_options.plot_state_vs_gnss_position            = 0;
 plot_options.plot_state_vs_external_position        = 0;
-plot_options.plot_gnss_status                       = 0;
-plot_options.plot_lla_error_and_sd.plot             = 0;
-plot_options.plot_lla_error_and_sd.type             = 1;
+plot_options.plot_gnss_status                       = 1;
+plot_options.plot_lla_error_and_sd.plot             = 1;
+plot_options.plot_lla_error_and_sd.type             = 0; %0 - Raw GNSS; 1 - External Position
 
 %*************************************************************************%
 %Initializations
@@ -55,8 +57,7 @@ plot_options.plot_lla_error_and_sd.type             = 1;
 
 %Time Input
 time_filter.time_interval   = [];
-%time_filter.time_interval   = [1.777329410839e+09, 1.777329665884e+09]; %Monday Dynamic
-%time_filter.time_interval   = [1.777475427643e+09, 1.777477562328e+09]; %Wednesday Driving
+%time_filter.time_interval   = [1.788037596147e+09, 1.788041213768e+09]; %Heading Dwell 1
 
 time_filter.time_type       = 3; %1 - date time, 2 - duration, 3 = unix time
 
@@ -90,10 +91,13 @@ end
 %*************************************************************************%
 
 %Determine plotting logic
-if(plot_options.plot_raw_sensors)
+if(plot_options.plot_raw_sensors.plot)
 
     %Call plot raw sensors
-    raw_sensors_figs    = Plot_Raw_Sensors(log_data.raw_sensors, plot_options);
+    raw_sensors_figs        = Plot_Raw_Sensors(log_data.raw_sensors, plot_options);
+
+    %Call plot raw sensors temperature correlation
+    raw_sensor_corrs_figs   = Plot_Raw_Sensors_Temperature_Correlation(log_data.raw_sensors, plot_options);
 
 end
 
@@ -204,7 +208,10 @@ end
 if(plot_options.plot_heading_analysis.plot)
 
     %Plot heading comparison
-    heading_plot = Plot_Heading_Comparison(log_data, plot_options);
+    heading_plot_comparison = Plot_Heading_Comparison(log_data, plot_options);
+
+    %Plot heading performance
+    heading_plot_performance = Plot_Heading_Performance(log_data, plot_options);
 
 end
 
