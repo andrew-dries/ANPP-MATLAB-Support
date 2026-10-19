@@ -80,6 +80,19 @@ function configuration = load_configuration(filename, device_id)
         elseif strfind(line,'Heading Offset = ')
             lineScan = textscan(line,'%s%s%s%f%s');
             configuration.headingOffset = lineScan{4};
+
+        %Search for Filter Status
+        elseif strfind(line,'Disable Dual Antenna Heading = ')
+
+            %Check for true
+            if( strfind(line,'true') )
+                configuration.DisableDualAntennaHeading = 1;
+            %Check for false
+            elseif( strfind(line,'false') )
+                configuration.DisableDualAntennaHeading = 0;
+            end
+            
+
         end
     end
 

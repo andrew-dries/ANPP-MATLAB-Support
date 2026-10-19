@@ -46,6 +46,7 @@ function sensor_data = load_sensor_log(filename, time_filter)
 
     %Process time
     [sensor_data, time_mask] = process_time_log_file(sensor_data, data(:,1:2), time_filter);
+    
     %Load raw data
     sensor_data.accelerometers = data(time_mask,3:5);
     sensor_data.gyroscopes = data(time_mask,6:8);

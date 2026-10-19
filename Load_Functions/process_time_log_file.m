@@ -38,8 +38,8 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
     %The time interval is exclusively for time duration in seconds
     if(~isempty(time_filter.time_interval))
 
-        %Mask time
-        mask_time = 1;
+        %Set min & max time
+        min_max_set = 1;
 
         %Initialize time mask
         time_mask   = logical(zeros(size(time_data(:,1))));
@@ -50,8 +50,8 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
 
     else
 
-        %Mask time
-        mask_time = 0;
+        %Set min & max time
+        min_max_set = 0;
 
         %Initialize time mask
         time_mask   = logical(ones(size(time_data(:,1))));
@@ -65,6 +65,34 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
     %Grab uix time
     log_data.unix_time_seconds  = time_data(:,1) + time_data(:,2)/1000000;
 
+    %Perform diff of unix time and look for big jumps where UTC corrections
+    %occur
+    utc_diff = [0;abs(diff(log_data.unix_time_seconds))];
+
+    %Use either mode / mean / median if they are not zero
+    utc_diff_stat_thresh = mode(utc_diff(utc_diff~=0));
+
+    %Mask for any diffs significantly greater than the mean / mode / median
+    mask_utc_time_diff = utc_diff > 1000*utc_diff_stat_thresh;
+
+    %Replace time from time jumps
+    if(~isempty(find(mask_utc_time_diff == 1)))
+
+        %Bad index
+        bad_index = find(mask_utc_time_diff == 1, 1);
+
+        %Look for big jumps "(find(mask_utc_time_diff == 1, 1))"
+        %then grab the next index " + 1"
+        first_good_time     = log_data.unix_time_seconds( bad_index + 1);
+
+        %Create a vector to replace other indecies
+        replacement_time_vector = flip(cumsum(-ones(1,bad_index)*utc_diff_stat_thresh));
+
+        %Replace bad times
+        log_data.unix_time_seconds(1:bad_index) = first_good_time + replacement_time_vector;
+
+    end
+
     %*********************************************************************%
     %Begin processing duration in seconds
     %*********************************************************************%
@@ -76,7 +104,7 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
     %Use either mode / mean / median if they are not zero
     utc_diff_stat_thresh = mode(utc_diff(utc_diff~=0));
 
-    %Mask for any diffs significantly greater than the mean / mode / median
+    %Mask for any diffs slightly greater than the mean / mode / median
     mask_utc_time_diff = utc_diff > 9*utc_diff_stat_thresh;
 
     %Replace these time jumps with the stat thresh
@@ -97,39 +125,46 @@ function [log_data, time_mask] = process_time_log_file(log_data, time_data, time
     %*********************************************************************%
     %The time mask is for filtering using time duration in seconds only
 
-    %Check mask time bool
-    if(mask_time)
+    %Set min and max time
+    if(min_max_set == 0)
 
-        %time_type definitions
-        %1 - date time
-        %2 - duration
-        if(time_filter.time_type == 1) %date time
-            error("Date time is not supported for time filtering!");
-        elseif(time_filter.time_type == 2) %duration
-            mask_time   = log_data.duration_seconds;
-        elseif(time_filter.time_type == 3) %Unix Time
-            mask_time   = log_data.unix_time_seconds;
-        end
+        %Calculate min and max time
+        time_min    = log_data.unix_time_seconds(1);
+        time_max    = log_data.unix_time_seconds(length(log_data.unix_time_seconds));
 
-        %Create mask
-        time_mask   = mask_time >= time_min & mask_time <= time_max;
-
-        %Check to make sure time mask is not null
-        if(isempty(find(time_mask == 1)))
-            fprintf('***********ERROR***********\n');
-            fprintf('Incorrect time interval given, time interval falls outside of duration!\n');
-            fprintf('Time Interval:  %f, %f\n', time_filter.time_interval(1), time_filter.time_interval(2));
-            fprintf('Time Duration [Min, Max]:  %f, %f\n', min(log_data.duration_seconds), max(log_data.duration_seconds));
-            fprintf('***********ERROR***********\n');
-            error("Incorrect time interval given, time interval falls outside of duration!");
-        end
-
-        %Mask time
-        log_data.unix_time_seconds      = log_data.unix_time_seconds(time_mask);
-        log_data.duration_seconds       = log_data.duration_seconds(time_mask);
-        log_data.datetime               = log_data.datetime(time_mask);
+        %Set bool
+        min_max_set = 1;
 
     end
+
+    %time_type definitions
+    %1 - date time
+    %2 - duration
+    if(time_filter.time_type == 1) %date time
+        error("Date time is not supported for time filtering!");
+    elseif(time_filter.time_type == 2) %duration
+        mask_time   = log_data.duration_seconds;
+    elseif(time_filter.time_type == 3) %Unix Time
+        mask_time   = log_data.unix_time_seconds;
+    end
+
+    %Create mask
+    time_mask   = mask_time >= time_min & mask_time <= time_max;
+
+    %Check to make sure time mask is not null
+    if(isempty(find(time_mask == 1)))
+        fprintf('***********ERROR***********\n');
+        fprintf('Incorrect time interval given, time interval falls outside of duration!\n');
+        fprintf('Time Interval:  %f, %f\n', time_filter.time_interval(1), time_filter.time_interval(2));
+        fprintf('Time Duration [Min, Max]:  %f, %f\n', min(log_data.duration_seconds), max(log_data.duration_seconds));
+        fprintf('***********ERROR***********\n');
+        error("Incorrect time interval given, time interval falls outside of duration!");
+    end
+
+    %Mask time
+    log_data.unix_time_seconds      = log_data.unix_time_seconds(time_mask);
+    log_data.duration_seconds       = log_data.duration_seconds(time_mask);
+    log_data.datetime               = log_data.datetime(time_mask);
 
     %Grab min unix time
     log_data.utc_time_min       = min(log_data.unix_time_seconds);

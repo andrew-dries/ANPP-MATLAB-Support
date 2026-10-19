@@ -147,6 +147,11 @@ function data = load_processed_log_files(folderpath, time_filter)
         data.external_body_velocity = load_external_body_velocity_log(strcat(folderpath,'/ExternalBodyVelocity.csv'), time_filter);
     end
 
+    %Load external position log
+    if(exist(strcat(folderpath,'/ExternalPosition.csv'), 'file') == 2)
+        data.external_position = load_external_position_log(strcat(folderpath,'/ExternalPosition.csv'), time_filter);
+    end
+
     %Load extended satellites log
     if(exist(strcat(folderpath,'/ExtendedSatellites.csv'), 'file') == 2)
         data.extended_satellites = load_extended_satellites_log(strcat(folderpath,'/ExtendedSatellites.csv'), time_filter);
@@ -155,6 +160,11 @@ function data = load_processed_log_files(folderpath, time_filter)
     %Load odometer state log
     if(exist(strcat(folderpath,'/OdometerState.csv'), 'file') == 2)
         data.odometer_state = load_odometer_state_log(strcat(folderpath,'/OdometerState.csv'), time_filter);
+    end
+
+    %Load automotive log
+    if(exist(strcat(folderpath,'/Automotive.csv'), 'file') == 2)
+        data.automotive = load_automotive_log(strcat(folderpath,'/Automotive.csv'), time_filter);
     end
 
     %Load bias state log

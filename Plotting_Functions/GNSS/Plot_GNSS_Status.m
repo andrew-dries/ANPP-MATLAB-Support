@@ -105,9 +105,19 @@ function figs = Plot_GNSS_Status(log_data, plot_options)
     %GNSS Status - CEP50
     %*********************************************************************%
 
+    %Set plot info input
+    plot_info_input.create_figure   = 1;
+    plot_info_input.lims_x          = [];
+    plot_info_input.lims_y          = [];
+    plot_info_input.title           = fig_names{1};
+    plot_info_input.x_label         = "Latitude (m)";
+    plot_info_input.y_label         = "Longitude (m)";
+    plot_info_input.legend          = {};
+    plot_info_input.percent         = 0.50;
+
     %Call Plot CEP 50 if raww gnss exists
     if(raw_gnss_exist)
-        figs(1) = Plot_CEP_2D(log_data.raw_gnss.position(:,1:2), 0.50);
+        figs(1) = Plot_CEP_2D(log_data.raw_gnss.position(:,1:2), plot_info_input);
     end
 
     %*********************************************************************%

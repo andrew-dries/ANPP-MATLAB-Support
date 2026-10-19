@@ -1,4 +1,4 @@
-function cep_fig = Plot_CEP_2D(positions_2d, percent)
+function cep_fig = Plot_CEP_2D(positions_2d, plot_info_input)
 %PLOT_CEP_2D This function produces a CEP plot using LAT and LON data and
 %determining the percentile of interest 1-99
 
@@ -6,8 +6,12 @@ function cep_fig = Plot_CEP_2D(positions_2d, percent)
     %Initializations
     %*********************************************************************%
 
-    %Initialize figure
-    cep_fig         = figure('Name','GNSS Status - CEP 2D');
+    %Create Time History Plot figure
+    if(plot_info_input.create_figure)
+        cep_fig = figure('Name','GNSS Status - CEP 2D');
+    else
+        cep_fig = gcf;
+    end
 
     %Determine vector length
     vec_length      = length(positions_2d);
@@ -21,7 +25,7 @@ function cep_fig = Plot_CEP_2D(positions_2d, percent)
     %*********************************************************************%
 
     %Determine percent index
-    percent_index   = round(percent*vec_length);
+    percent_index   = round(plot_info_input.percent*vec_length);
 
     %Find mean of lat / lon
     mean_lat_lon    = mean(positions_2d);
@@ -40,10 +44,10 @@ function cep_fig = Plot_CEP_2D(positions_2d, percent)
     %*********************************************************************%
 
     %Build text
-    title_text{1}   = sprintf("CEP%d 2D Plot", percent*100);
-    title_text{2}   = sprintf("CEP%d:  %4.2f (meters)", percent*100, distance_between_lat_lon_points(positions_2d(percent_index,1:2), mean_lat_lon));
-    inside_text     = sprintf("Inside CEP%d", percent*100);
-    outside_text    = sprintf("Outside CEP%d", percent*100);
+    title_text{1}   = sprintf("CEP%d 2D Plot", plot_info_input.percent*100);
+    title_text{2}   = sprintf("CEP%d:  %4.2f (meters)", plot_info_input.percent*100, distance_between_lat_lon_points(positions_2d(percent_index,1:2), mean_lat_lon));
+    inside_text     = sprintf("Inside CEP%d", plot_info_input.percent*100);
+    outside_text    = sprintf("Outside CEP%d", plot_info_input.percent*100);
 
     %Geoscatter plot - mean
     geoscatter(mean_lat_lon(1), mean_lat_lon(2), 40, ...

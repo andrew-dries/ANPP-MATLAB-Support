@@ -1,4 +1,4 @@
-function figs = Plot_Gyrocompass_Heading_Vs_Position(state, raw_gnss, create_figure, position_type, plot_options)
+function figs = Plot_Gyrocompass_Heading_Vs_Position(log_data, create_figure, plot_options)
 %Plot_Dual_GNSS_Heading Plots important information to understand Dual GNSS
 %Heading performance
 
@@ -19,17 +19,31 @@ function figs = Plot_Gyrocompass_Heading_Vs_Position(state, raw_gnss, create_fig
     end
     
     %Determine if using Raw GNSS or State Position
-    if(position_type == 1) %Use State
-        position                    = state.position(state.filter_status.heading_initialised == 1,:);
-        heading                     = state.orientation(state.filter_status.heading_initialised == 1,3);
-        heading_standard_deviation  = min(extract_standard_deviation(state.duration_seconds(state.filter_status.heading_initialised == 1), state.orientation(state.filter_status.heading_initialised == 1,3), 0.5), 20);
-        time                        = state.unix_time_seconds(state.filter_status.heading_initialised == 1);
-    elseif(position_type == 2) %Use Raw GNSS
-        position                    = raw_gnss.position(raw_gnss.status.time_valid == 1,:);
-        state_time_match            = find_closest_time_vector_fast(state.unix_time_seconds(state.filter_status.heading_initialised == 1), raw_gnss.unix_time_seconds(raw_gnss.status.time_valid == 1));
-        heading                     = state.orientation(state_time_match.mask,3);
-        heading_standard_deviation  = min(extract_standard_deviation(state.duration_seconds(state_time_match.mask), state.orientation(state_time_match.mask,3), 0.5), 20);
-        time                        = state.unix_time_seconds(state_time_match.mask);
+    if(plot_options.plot_gyrocompass_heading_vs_pos.type == 0) %Use State
+        position                    = log_data.state.position(log_data.state.filter_status.heading_initialised == 1,:);
+        heading                     = log_data.state.orientation(log_data.state.filter_status.heading_initialised == 1,3);
+        heading_standard_deviation  = min(extract_standard_deviation(log_data.state.duration_seconds(log_data.state.filter_status.heading_initialised == 1),...
+                                        log_data.state.orientation(log_data.state.filter_status.heading_initialised == 1,3), 0.5), 20);
+        time                        = log_data.state.unix_time_seconds(log_data.state.filter_status.heading_initialised == 1);
+    elseif(plot_options.plot_gyrocompass_heading_vs_pos.type == 1) %Use Raw GNSS
+        position                    = log_data.raw_gnss.position(log_data.raw_gnss.status.time_valid == 1,:);
+        state_time_match            = find_closest_time_vector_fast(log_data.state.unix_time_seconds(log_data.state.filter_status.heading_initialised == 1),...
+                                        log_data.raw_gnss.unix_time_seconds(log_data.raw_gnss.status.time_valid == 1));
+        heading                     = log_data.state.orientation(state_time_match.mask,3);
+        heading_standard_deviation  = min(extract_standard_deviation(log_data.state.duration_seconds(state_time_match.mask),...
+                                        log_data.state.orientation(state_time_match.mask,3), 0.5), 20);
+        time                        = log_data.state.unix_time_seconds(state_time_match.mask);
+    elseif(plot_options.plot_gyrocompass_heading_vs_pos.type == 2) %Use Raw GNSS
+        
+        %Perform time sync
+        [state_time, position_time]     = find_closest_time_vector_fast(log_data.state.unix_time_seconds(log_data.state.filter_status.heading_initialised == 1),...
+                                                log_data.external_position.unix_time_seconds);
+        
+        position                    = log_data.external_position.position(position_time.mask,:);
+        heading                     = log_data.state.orientation(state_time.mask,3);
+        heading_standard_deviation  = min(extract_standard_deviation(log_data.state.duration_seconds(state_time.mask),...
+                                        log_data.state.orientation(state_time.mask,3), 0.5), 20);
+        time                        = log_data.state.unix_time_seconds(state_time.mask);
     end
 
     %Initialize interval

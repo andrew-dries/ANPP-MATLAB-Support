@@ -46,6 +46,7 @@ function odometer_state = load_odometer_state_log(filename, time_filter)
 
     %Process time
     [odometer_state, time_mask] = process_time_log_file(odometer_state, data(:,1:2), time_filter);
+    
     %Grab other outputs
     odometer_data.pulse_count = data(time_mask,3);
     odometer_data.distance = data(time_mask,4);

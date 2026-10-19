@@ -1,4 +1,4 @@
-function position_fig = Plot_Position_History_In_Time(input_positions, input_heading, input_times, plot_info_input)
+function position_fig = Plot_Position_History_In_Time(input_positions, input_heading, input_times, state_time, plot_info_input)
     %This function is meant to take in a matrix of positions to be plotted
     %against each other with respect to time if there are more than one.
     %INPUTS: input_positions(N,2,M), input_times(N,M), plot_info_input
@@ -19,6 +19,9 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
 
     %Grab default position
     default_position = [2561, 170, 2560, 1315];
+
+    %Mask Counter
+    mask_counter = 1;
     
     %Create Positions figure properties
     grid on;
@@ -98,8 +101,9 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
         title_text{3}       = strcat("Current Time (s): ", num2str(time_vector(i)));
 
         %**************************************%
-        reset_min_max   = 1;
-        legend_cnt      = 1;
+        reset_min_max       = 1;
+        legend_cnt          = 1;
+        skip_current_ind    = 0;
         %**************************************%
 
         %Step through the number of vector CDFs to plot
@@ -110,6 +114,12 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
 
             %Find most current time index
             current_ind = max(find(mask == 1));
+
+            %If curent index is empty, nothing to plot, continue
+            if( isempty(current_ind) )
+                skip_current_ind = 1;
+                continue;
+            end
 
             %Set local min / max on first pass
             if(reset_min_max && ~isempty(find(mask == 1)))
@@ -159,13 +169,17 @@ function position_fig = Plot_Position_History_In_Time(input_positions, input_hea
 
         end
 
+        if(skip_current_ind)
+            continue;
+        end
+
         %Step through the number of vector CDFs to plot heading
         for j = 1:vector_width
-
+            
             %Adjust distnace multiplier as needed
             %0.0001     = 10m
             %0.001      = 100m
-            dist_mult = 0.1*(max(abs(max_lat - min_lat), abs(max_lon - min_lon)));
+            dist_mult = max(0.001, 0.1*(max(abs(max_lat - min_lat), abs(max_lon - min_lon))));
 
             %Make heading at current position
             h(legend_cnt) = geoplot([input_positions.(fields.positions{j})(current_ind,1), ...

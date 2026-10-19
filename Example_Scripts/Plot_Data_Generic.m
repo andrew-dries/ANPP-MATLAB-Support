@@ -25,16 +25,26 @@ plot_options.plotting_time_type                     = 4; %1 - date time, 2 - dur
 
 %Set plotting options
 plot_options.plot_state                             = 1;
-plot_options.plot_raw_sensors                       = 1;
+plot_options.plot_raw_sensors                       = 0;
 plot_options.plot_bias                              = 0;
-plot_options.plot_heading_analysis                  = 1;
-plot_options.make_video_position_history            = 0;
+plot_options.plot_orientation_check                 = 0;
+plot_options.plot_heading_analysis.plot             = 0;
+plot_options.plot_heading_analysis.type             = 1;
+plot_options.plot_velocity_analysis                 = 0;
+plot_options.make_video_position_history.plot       = 0;
+plot_options.make_video_position_history.type       = 1;
 plot_options.plot_error_over_distance_travelled     = 0;
+plot_options.plot_position_error.plot               = 0;
+plot_options.plot_position_error.type               = 1;
 plot_options.plot_acceleration_error_estimates      = 0;
-plot_options.plot_raw_sensors_vibration_rms         = 1;
-plot_options.plot_gyrocompass_heading_vs_pos        = 0;
-plot_options.plot_state_vs_gnss_position            = 1;
+plot_options.plot_raw_sensors_vibration_rms         = 0;
+plot_options.plot_gyrocompass_heading_vs_pos.plot   = 0;
+plot_options.plot_gyrocompass_heading_vs_pos.type   = 0;
+plot_options.plot_state_vs_gnss_position            = 0;
+plot_options.plot_state_vs_external_position        = 0;
 plot_options.plot_gnss_status                       = 0;
+plot_options.plot_lla_error_and_sd.plot             = 0;
+plot_options.plot_lla_error_and_sd.type             = 1;
 
 %*************************************************************************%
 %Initializations
@@ -45,6 +55,8 @@ plot_options.plot_gnss_status                       = 0;
 
 %Time Input
 time_filter.time_interval   = [];
+%time_filter.time_interval   = [1.777329410839e+09, 1.777329665884e+09]; %Monday Dynamic
+%time_filter.time_interval   = [1.777475427643e+09, 1.777477562328e+09]; %Wednesday Driving
 
 time_filter.time_type       = 3; %1 - date time, 2 - duration, 3 = unix time
 
@@ -86,6 +98,18 @@ if(plot_options.plot_raw_sensors)
 end
 
 %*************************************************************************%
+%Plot Heading Check
+%*************************************************************************%
+
+%Determine plotting logic
+if(plot_options.plot_orientation_check)
+
+    %Call plot raw sensors
+    orientation_check_fig    = Plot_Orientation_Check(log_data, plot_options);
+
+end
+
+%*************************************************************************%
 %Plot Bias
 %*************************************************************************%
 
@@ -102,10 +126,10 @@ end
 %*************************************************************************%
 
 %Determine plotting logic
-if(plot_options.plot_gyrocompass_heading_vs_pos)
+if(plot_options.plot_gyrocompass_heading_vs_pos.plot)
 
     %Plot heading history for different GNSS fix types
-    gyro_heading_figs   = Plot_Gyrocompass_Heading_Vs_Position(log_data.state, log_data.raw_gnss, 1, 2, plot_options);
+    gyro_heading_figs   = Plot_Gyrocompass_Heading_Vs_Position(log_data, 1, plot_options);
 
 end
 
@@ -118,6 +142,18 @@ if(plot_options.plot_state_vs_gnss_position)
 
     %Plot Raw GNSS vs State Position
     gnss_vs_state_figs = Plot_Raw_GNSS_vs_State_Position(log_data, plot_options);
+
+end
+
+%*************************************************************************%
+%State state position vs External position
+%*************************************************************************%
+
+%Determine plotting logic
+if(plot_options.plot_state_vs_external_position)
+
+    %Plot External Position vs State Position
+    gnss_vs_state_figs = Plot_External_Position_vs_State_Position(log_data, plot_options);
 
 end
 
@@ -165,10 +201,34 @@ end
 %*************************************************************************%
 
 %Check Plotting Logic
-if(plot_options.plot_heading_analysis)
+if(plot_options.plot_heading_analysis.plot)
 
     %Plot heading comparison
     heading_plot = Plot_Heading_Comparison(log_data, plot_options);
+
+end
+
+%*************************************************************************%
+%Plot Position Error
+%*************************************************************************%
+
+%Check Plotting Logic
+if(plot_options.plot_position_error.plot)
+
+    %Plot heading comparison
+    position_error_plot = position_error(log_data, plot_options);
+
+end
+
+%*************************************************************************%
+%Analyze Velocity Inputs
+%*************************************************************************%
+
+%Check Plotting Logic
+if(plot_options.plot_velocity_analysis)
+
+    %Plot velocity comparison
+    velocity_plot = Plot_Velocity_Comparison(log_data, plot_options);
 
 end
 
@@ -185,13 +245,29 @@ if(plot_options.plot_raw_sensors_vibration_rms)
 end
 
 %*************************************************************************%
+%Plot LLA Error & Standard Deviation
+%*************************************************************************%
+
+%Plot LLA Error and SD
+if(plot_options.plot_lla_error_and_sd.plot)
+
+    %Plot LLA Error and SD
+    lla_error_and_sd_plot = Plot_LLA_Error_and_SD(log_data, plot_options);
+
+end
+
+%*************************************************************************%
 %Plot Time History of Raw GNSS Position vs State Position - Video
 %*************************************************************************%
 
 %Determine if video should be made
-if(plot_options.make_video_position_history)
+if(plot_options.make_video_position_history.plot)
 
     %Plot time history video
-    hist_pos_fig = Plot_Time_History_State_vs_Raw_GNSS_Position(log_data);
+    hist_pos_fig = Plot_Time_History_State_vs_Raw_GNSS_Position(log_data, plot_options);
 
 end
+
+%*************************************************************************%
+%Custom Plots
+%*************************************************************************%

@@ -16,7 +16,7 @@ function position_fig = Plot_Position_History(input_positions, times, plot_info_
     
     %Create Positions figure
     position_fig = figure('Name', plot_info_input.figure_name);
-    
+
     %Create Positions figure properties
     grid on;
     
@@ -47,8 +47,14 @@ function position_fig = Plot_Position_History(input_positions, times, plot_info_
     %*********************************************************************%
 
     % 1.  Grab data of interest and save to a cell
-    datatip_data.unix_time_seconds          = times.(time_fields{1});
-    datatip_data.position                   = input_positions.(pos_fields{1});
+    datatip_data{1}.unix_time_seconds          = times.(time_fields{1});
+    datatip_data{1}.position                   = input_positions.(pos_fields{1});
+
+    %Determine if we have multiple datasets to plot
+    if( length( times ) >= 2 )
+        datatip_data{2}.unix_time_seconds          = times.(time_fields{2});
+        datatip_data{2}.position                   = input_positions.(pos_fields{2});
+    end
 
     % 2. Get the data cursor mode object for the figure
     dcm_obj = datacursormode(position_fig);
@@ -125,14 +131,31 @@ function output_txt = myCustomDatatipPositionHistory(~, event_obj)
     y_val = pos(2);
 
     %Find the index of position that closet matches
-    x_ind   = find( abs( datatip_data.position(:,1) - x_val ) == min( abs( datatip_data.position(:,1) - x_val ) ) );
-    y_ind   = find( abs( datatip_data.position(:,2) - y_val ) == min( abs( datatip_data.position(:,2) - y_val ) ) );
+    for i = 1:length(datatip_data)
+        min_x(i) = min( abs( datatip_data{i}.position(:,1) - x_val ) );
+        min_y(i) = min( abs( datatip_data{i}.position(:,2) - y_val ) );
+    end
+
+    %Find the i index that was min
+    i = find ( min_y + min_x == min( min_y + min_x ) );
+
+    x_ind   = find( abs( datatip_data{i}.position(:,1) - x_val ) == min( abs( datatip_data{i}.position(:,1) - x_val ) ) );
+    y_ind   = find( abs( datatip_data{i}.position(:,2) - y_val ) == min( abs( datatip_data{i}.position(:,2) - y_val ) ) );
     ind     = x_ind( find( x_ind == y_ind ) );
+
+    %If ind is empty, grab the first x_ind
+    if( isempty(ind) )
+        ind = x_ind(1);
+    end
+
+    if( length(ind) > 1 )
+        ind = ind(1);
+    end
     
     % Create the custom text for the datatip
     % The output must be a cell array of strings or a character array.
-    output_txt = {[sprintf("Position:    Lat %2.3d, Lon %2.3d\n", datatip_data.position(ind,1), datatip_data.position(ind,2))]; ...
-                  [sprintf("UTC Time:    %4.12d\n", datatip_data.unix_time_seconds(ind))]};
+    output_txt = {[sprintf("Position:    Lat %2.3d, Lon %2.3d\n", datatip_data{i}.position(ind,1), datatip_data{i}.position(ind,2))]; ...
+                  [sprintf("UTC Time:    %4.12d\n", datatip_data{i}.unix_time_seconds(ind))]};
 
     %Print text to screen
     fprintf("%s\n", output_txt{:})

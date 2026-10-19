@@ -263,7 +263,7 @@ function figs = Plot_Bias(bias, plot_options)
     %Set font 14 bold
     set(gca, 'FontWeight', 'bold', 'FontSize', 14)
 
-    %3 X Axis Integratio 
+    %3 X Axis Integration
 	subplot(3,1,3);
 	plot(plotting_time,bias.x_axis_integration, ".");
 	title('X Axis Integration');
